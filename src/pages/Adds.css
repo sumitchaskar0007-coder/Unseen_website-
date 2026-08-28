@@ -1,0 +1,323 @@
+/* Adds.css - White, Orange, and Black Color Combination */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.adds-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+/* Title Styling */
+.adds-title {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  color: #000000;
+  margin-bottom: 50px;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.adds-title::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 5px;
+  background: #ff6b00;
+  margin: 15px auto 0;
+  border-radius: 10px;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 30px;
+  padding-left: 20px;
+  border-left: 6px solid #ff6b00;
+  border-radius: 3px;
+}
+
+/* Instagram Reels Section */
+.reels-section {
+  margin-bottom: 60px;
+}
+
+.reels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 10px;
+}
+
+.reel-card {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.reel-card:hover {
+  transform: translateY(-8px);
+  border-color: #ff6b00;
+  box-shadow: 0 12px 30px rgba(255, 107, 0, 0.2);
+}
+
+.reel-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 177.77%; /* 9:16 aspect ratio for reels */
+  height: 0;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.reel-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #ffffff;
+}
+
+.reel-link {
+  display: block;
+  text-align: center;
+  padding: 14px 20px;
+  background: #000000;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.reel-link:hover {
+  background: #ff6b00;
+  color: #ffffff;
+  transform: scale(1.02);
+}
+
+/* YouTube Shorts Section */
+.shorts-section {
+  margin-bottom: 40px;
+}
+
+.shorts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  padding: 10px;
+  justify-items: center;
+}
+
+.short-card {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 360px;
+  width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.short-card:hover {
+  transform: translateY(-8px);
+  border-color: #ff6b00;
+  box-shadow: 0 12px 30px rgba(255, 107, 0, 0.2);
+}
+
+.short-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 177.77%; /* 9:16 aspect ratio for shorts */
+  height: 0;
+  overflow: hidden;
+  background: #000000;
+}
+
+.short-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000000;
+}
+
+.short-link {
+  display: block;
+  text-align: center;
+  padding: 14px 20px;
+  background: #ff6b00;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.short-link:hover {
+  background: #000000;
+  color: #ffffff;
+  transform: scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .adds-container {
+    padding: 20px 15px;
+  }
+
+  .adds-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    padding-left: 15px;
+    border-left-width: 4px;
+  }
+
+  .reels-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 5px;
+  }
+
+  .shorts-container {
+    grid-template-columns: 1fr;
+    padding: 5px;
+  }
+
+  .short-card {
+    max-width: 320px;
+  }
+
+  .reel-link,
+  .short-link {
+    padding: 12px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .adds-title {
+    font-size: 1.6rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+
+  .reels-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .reel-card {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .short-card {
+    max-width: 280px;
+  }
+
+  .reel-embed,
+  .short-embed {
+    padding-bottom: 160%; /* Slightly adjusted for mobile */
+  }
+}
+
+/* Loading State for Embeds */
+.reel-iframe,
+.short-iframe {
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Custom Scrollbar */
+.adds-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.adds-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.adds-container::-webkit-scrollbar-thumb {
+  background: #ff6b00;
+  border-radius: 5px;
+}
+
+.adds-container::-webkit-scrollbar-thumb:hover {
+  background: #000000;
+}
+
+/* Utility Classes for Orange Highlights */
+.orange-text {
+  color: #ff6b00;
+}
+
+.black-text {
+  color: #000000;
+}
+
+.white-bg {
+  background: #ffffff;
+}
+
+.orange-bg {
+  background: #ff6b00;
+}
+
+.black-bg {
+  background: #000000;
+}
+
+/* Hover Effects for Cards */
+.reel-card::before,
+.short-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 107, 0, 0.05) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.reel-card:hover::before,
+.short-card:hover::before {
+  opacity: 1;
+}

@@ -1,0 +1,829 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+/* Example Google Fonts import — if the exact font is not available, choose a similar one */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* One typeface across the entire application. */
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: 'Inter', sans-serif;
+}
+
+body * {
+  font-family: inherit !important;
+}
+
+/* Then in .founder-heading, use: font-family: 'Playfair Display', serif; */
+@import 'react-quill/dist/quill.snow.css';
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-void text-foreground font-sans antialiased;
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  img, video, iframe, svg {
+    max-width: 100%;
+    height: auto;
+  }
+  button, a, input, select, textarea { min-width: 0; }
+  h1, h2, h3, p, a { overflow-wrap: break-word; }
+  main, section, article, header, footer, nav { min-width: 0; }
+  
+  /* Selection color */
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+}
+
+@media (max-width: 639px) {
+  /*
+   * Keep every routed page flush with the fixed-header spacer. Individual
+   * hero sections can still control their own intentional inner padding.
+   */
+  #main > * {
+    margin-top: 0;
+  }
+
+  .blog-content p, .blog-content li { font-size: 1rem; }
+  .blog-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================
+   TYPOGRAPHY & BLOG STYLES
+   ======================================== */
+
+@layer components {
+  /* Quill Editor Styles */
+  .ql-editor {
+    @apply min-h-[400px] text-gray-800 font-sans;
+  }
+  
+  .ql-editor h1 {
+    @apply text-4xl font-bold mb-4 font-serif;
+  }
+  
+  .ql-editor h2 {
+    @apply text-2xl font-bold mb-3 mt-6 font-serif;
+  }
+  
+  .ql-editor h3 {
+    @apply text-xl font-semibold mb-2 mt-4;
+  }
+  
+  .ql-editor p {
+    @apply mb-4 leading-relaxed;
+  }
+  
+  .ql-editor ul {
+    @apply list-disc pl-6 mb-4;
+  }
+  
+  .ql-editor ol {
+    @apply list-decimal pl-6 mb-4;
+  }
+  
+  .ql-editor blockquote {
+    @apply border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600;
+  }
+  
+  .ql-editor img {
+    @apply rounded-lg my-4 max-w-full;
+  }
+  
+  .ql-editor a {
+    @apply text-blue-500 hover:underline;
+  }
+  
+  /* Blog Content Styles - Medium Style */
+  .blog-content {
+    max-width: 750px;
+    margin: 0 auto;
+    font-family: 'Inter', 'Helvetica', 'Arial', sans-serif;
+    color: #222;
+  }
+  
+  .blog-content h1 {
+    @apply text-4xl md:text-5xl font-bold mb-6 font-serif;
+    color: #222;
+    line-height: 1.2;
+  }
+  
+  .blog-content h2 {
+    @apply text-2xl md:text-3xl font-semibold mt-12 mb-4 font-serif;
+    color: #222;
+    line-height: 1.3;
+  }
+  
+  .blog-content h3 {
+    @apply text-xl md:text-2xl font-semibold mt-8 mb-3;
+    color: #222;
+  }
+  
+  .blog-content h4 {
+    @apply text-lg md:text-xl font-semibold mt-6 mb-2;
+    color: #222;
+  }
+  
+  .blog-content p {
+    @apply text-lg leading-relaxed mb-6;
+    color: #333;
+    line-height: 1.8;
+    font-size: 18px;
+  }
+  
+  /* Drop Cap - First letter large styling */
+  .blog-content .drop-cap:first-of-type::first-letter,
+  .blog-content > p:first-of-type::first-letter {
+    font-size: 52px;
+    font-weight: bold;
+    float: left;
+    margin-right: 12px;
+    line-height: 0.8;
+    font-family: Georgia, 'Playfair Display', serif;
+    color: #222;
+  }
+  
+  /* Blockquote styling */
+  .blog-content blockquote {
+    @apply border-l-4 border-blue-400 pl-6 my-8 italic;
+    font-size: 1.2rem;
+    color: #555;
+    font-family: Georgia, serif;
+  }
+  
+  /* Image styling */
+  .blog-content img {
+    @apply rounded-lg my-8 w-full;
+    border-radius: 12px;
+  }
+  
+  .blog-content figure {
+    @apply my-8;
+  }
+  
+  .blog-content figcaption {
+    @apply text-sm text-center text-gray-500 mt-2;
+  }
+  
+  /* Lists */
+  .blog-content ul {
+    @apply list-disc pl-6 mb-6;
+  }
+  
+  .blog-content ol {
+    @apply list-decimal pl-6 mb-6;
+  }
+  
+  .blog-content li {
+    @apply text-lg leading-relaxed mb-2;
+    color: #333;
+  }
+  
+  /* Highlight Box */
+  .blog-content .highlight-box {
+    @apply bg-yellow-50 border-l-4 border-yellow-400 p-6 my-8 rounded-r-lg;
+    background-color: #fefce8;
+  }
+  
+  /* Divider */
+  .blog-content hr,
+  .blog-content .divider {
+    @apply my-8;
+    border-top: 1px solid #e5e5e5;
+  }
+  
+  /* Code blocks */
+  .blog-content pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg my-6 overflow-x-auto;
+  }
+  
+  .blog-content code {
+    @apply bg-gray-100 text-red-600 px-1 py-0.5 rounded text-sm;
+  }
+  
+  /* Tables */
+  .blog-content table {
+    @apply w-full my-6 border-collapse;
+  }
+  
+  .blog-content th,
+  .blog-content td {
+    @apply border border-gray-300 p-3 text-left;
+  }
+  
+  .blog-content th {
+    @apply bg-gray-100 font-semibold;
+  }
+  
+  /* Links */
+  .blog-content a {
+    @apply text-blue-500 hover:text-blue-600 underline;
+  }
+  
+  /* Line clamp for blog excerpts */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-up {
+  animation: scaleUp 0.3s ease-out;
+}
+
+/* ========================================
+   CUSTOM SCROLLBAR
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}
+
+/* ========================================
+   LOADING SPINNER
+   ======================================== */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   MODAL BACKDROP
+   ======================================== */
+
+.modal-backdrop {
+  @apply fixed inset-0 bg-black bg-opacity-50 z-40;
+  backdrop-filter: blur(4px);
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+@responsive {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  .no-print {
+    display: none;
+  }
+  
+  .blog-content {
+    max-width: 100%;
+    color: black;
+  }
+  
+  .blog-content a {
+    text-decoration: none;
+    color: black;
+  }
+}
+
+/* ========================================
+   GALLERY GRID STYLES
+   ======================================== */
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.gallery-item {
+  @apply relative overflow-hidden rounded-lg cursor-pointer;
+  aspect-ratio: 4 / 3;
+}
+
+.gallery-item img {
+  @apply w-full h-full object-cover transition-transform duration-300;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+.gallery-overlay {
+  @apply absolute inset-0 bg-black bg-opacity-0 flex items-center justify-center transition-all duration-300;
+}
+
+.gallery-item:hover .gallery-overlay {
+  @apply bg-opacity-60;
+}
+
+/* ========================================
+   CAREER CARD STYLES
+   ======================================== */
+
+.career-card {
+  @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300;
+}
+
+.career-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   ADMIN DASHBOARD STYLES
+   ======================================== */
+
+.admin-sidebar {
+  @apply w-64 bg-gray-900 text-white fixed h-full;
+}
+
+.admin-main {
+  @apply ml-64 p-6;
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+@media (max-width: 768px) {
+  .blog-content p {
+    font-size: 16px;
+  }
+  
+  .blog-content h1 {
+    font-size: 32px;
+  }
+  
+  .blog-content h2 {
+    font-size: 24px;
+  }
+  
+  .blog-content {
+    padding: 0 20px;
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .admin-main {
+    margin-left: 0;
+  }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Text truncation */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Aspect ratio utilities */
+.aspect-w-16 {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+}
+
+.aspect-w-16 > * {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus rings */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+/* ========================================
+   RICH TEXT EDITOR CUSTOMIZATION
+   ======================================== */
+
+.quill-wrapper {
+  @apply bg-white rounded-lg;
+}
+
+.ql-toolbar {
+  @apply rounded-t-lg border border-gray-300;
+}
+
+.ql-container {
+  @apply rounded-b-lg border border-t-0 border-gray-300;
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS
+   ======================================== */
+
+.toast-success {
+  @apply bg-green-500 text-white rounded-lg shadow-lg;
+}
+
+.toast-error {
+  @apply bg-red-500 text-white rounded-lg shadow-lg;
+}
+
+.toast-info {
+  @apply bg-blue-500 text-white rounded-lg shadow-lg;
+}
+
+/* ========================================
+   FORM STYLES
+   ======================================== */
+
+.form-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.form-error {
+  @apply text-red-500 text-sm mt-1;
+}
+
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+
+.btn-primary {
+  @apply bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.btn-secondary {
+  @apply bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors;
+}
+
+.btn-success {
+  @apply bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors;
+}
+
+/* ========================================
+   CARD STYLES
+   ======================================== */
+
+.card {
+  @apply bg-white rounded-lg shadow-md overflow-hidden;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-gray-200;
+}
+
+.card-body {
+  @apply px-6 py-4;
+}
+
+.card-footer {
+  @apply px-6 py-4 border-t border-gray-200;
+}
+
+/* ========================================
+   TABLE STYLES
+   ======================================== */
+
+.table-container {
+  @apply overflow-x-auto;
+}
+
+.table {
+  @apply min-w-full divide-y divide-gray-200;
+}
+
+.table th {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.table td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+}
+
+.table tr {
+  @apply hover:bg-gray-50;
+}
+
+/* ========================================
+   BADGE STYLES
+   ======================================== */
+
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* ========================================
+   PROGRESS BAR
+   ======================================== */
+
+.progress-bar {
+  @apply fixed top-0 left-0 w-full h-1 bg-gray-200 z-50;
+}
+
+.progress-bar-fill {
+  @apply h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300;
+}
+
+/* ========================================
+   SKELETON LOADING
+   ======================================== */
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+
+/* Add this to your global CSS or a CSS module for styling */
+.founder-section {
+  background-color: white;
+  padding: 4rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.founder-container {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: center;
+  background-color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.founder-image {
+  flex: 1;
+  min-width: 280px;
+}
+
+.founder-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.founder-info {
+  flex: 1;
+  padding: 2rem;
+  background-color: white;
+}
+
+.founder-heading {
+  font-family: 'Nautilius Pompilius', 'Georgia', 'Times New Roman', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff8c00 0%, #000000 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.founder-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.founder-quote {
+  font-style: italic;
+  font-size: 1.2rem;
+  color: #ff8c00;
+  border-left: 4px solid #ff8c00;
+  padding-left: 1rem;
+  margin-bottom: 2rem;
+}
+
+.founder-button {
+  background-color: black;
+  color: #ff8c00;
+  border: 2px solid #ff8c00;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 0.375rem;
+}
+
+.founder-button:hover {
+  background-color: #ff8c00;
+  color: black;
+  border-color: black;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .founder-section {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .founder-container {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .founder-heading {
+    font-size: 2rem;
+  }
+
+  .founder-info {
+    padding: 1.5rem;
+  }
+}

@@ -1,0 +1,276 @@
+import { motion } from 'framer-motion'
+import { AlertCircle, MapPin, MessageCircle, Send } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { getWhatsAppChatUrl, getWhatsAppDigits, openWhatsAppWithMessage } from '../config/whatsapp'
+import { IconInstagram, IconLinkedin, IconYoutube } from '../components/icons/SocialIcons'
+import { MagneticButton } from '../components/MagneticButton'
+import { Reveal } from '../components/Reveal'
+import { SectionHeading } from '../components/SectionHeading'
+
+const services = [
+  'Documentary Films',
+  'Podcast & Jingles',
+  'Video Ads',
+  'Social Media Marketing',
+  'Website Development',
+  'Digital Marketing',
+  'SEO Optimization',
+  'Political Campaigns',
+  'Bulk SMS Marketing',
+  'Other / Not sure',
+]
+
+const fieldClass =
+  'rounded-2xl border border-black/10 bg-white px-4 py-3.5 text-[15px] text-black outline-none transition-[border-color,box-shadow] placeholder:text-black/25 focus:border-orange-500/40 focus:ring-2 focus:ring-orange-500/20'
+
+function buildInquiryMessage(fd: FormData) {
+  const name = String(fd.get('name') ?? '').trim()
+  const email = String(fd.get('email') ?? '').trim()
+  const phone = String(fd.get('phone') ?? '').trim()
+  const service = String(fd.get('service') ?? '').trim()
+  const message = String(fd.get('message') ?? '').trim()
+
+  return [
+    'New inquiry — Unseen Studio website',
+    '—',
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Phone: ${phone || '—'}`,
+    `Service: ${service}`,
+    '—',
+    'Message:',
+    message,
+  ].join('\n')
+}
+
+export function ContactPage() {
+  const [status, setStatus] = useState<'idle' | 'sent' | 'error'>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const waDigits = getWhatsAppDigits()
+  const waQuick = getWhatsAppChatUrl()
+
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
+    setStatus('idle')
+    const fd = new FormData(e.currentTarget)
+    const body = buildInquiryMessage(fd)
+
+    if (!getWhatsAppDigits()) {
+      setError('Add your WhatsApp number to the project .env file as VITE_WHATSAPP_NUMBER (digits only, with country code).')
+      setStatus('error')
+      return
+    }
+
+    const ok = openWhatsAppWithMessage(body)
+    if (!ok) {
+      setError('Could not open WhatsApp. Check the number in .env and try again.')
+      setStatus('error')
+      return
+    }
+
+    setStatus('sent')
+    e.currentTarget.reset()
+    window.setTimeout(() => setStatus('idle'), 4000)
+  }
+
+  return (
+    <section id="contact" className="relative min-h-screen bg-white pb-20 pt-0 md:pb-28 md:pt-0">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,165,0,0.06),transparent_55%)]" />
+
+      <div className="relative mx-auto max-w-7xl px-5 md:px-8">
+        <div className="contact-page-heading max-w-3xl">
+          <SectionHeading
+            eyebrow="Contact"
+            title="Start a conversation — we'll reply where you already work."
+            subtitle="Send the brief through the form. It opens WhatsApp with your details prefilled so we can respond fast."
+          />
+          <style>{`
+            .contact-page-heading h2,
+            .contact-page-heading p {
+              color: #000 !important;
+            }
+          `}</style>
+        </div>
+
+        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-start lg:gap-14">
+          <div className="space-y-8">
+            <Reveal>
+              <div className="flex flex-wrap items-center gap-3">
+                {waQuick ? (
+                  <MagneticButton>
+                    <a
+                      href={waQuick}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-orange-400/25 bg-orange-500/10 px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-orange-500/20"
+                    >
+                      <MessageCircle className="h-4 w-4 shrink-0 text-orange-500" aria-hidden />
+                      Chat on WhatsApp
+                    </a>
+                  </MagneticButton>
+                ) : (
+                  <p className="rounded-2xl border border-orange-400/20 bg-orange-500/10 px-4 py-3 text-xs font-medium text-black/80">
+                    Set <code className="rounded bg-black/10 px-1.5 py-0.5">VITE_WHATSAPP_NUMBER</code> in{' '}
+                    <code className="rounded bg-black/10 px-1.5 py-0.5">.env</code> to enable the WhatsApp button.
+                  </p>
+                )}
+                <div className="flex items-center gap-2">
+                  <a
+                    href="https://www.instagram.com/unseenstudios.in"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Instagram"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                  >
+                    <IconInstagram className="h-4 w-4" />
+                  </a>
+                  <a
+                    href="https://www.facebook.com/search/top?q=unseenstudio"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Facebook"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                  >
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </a>
+                  <a
+                    href="https://www.youtube.com/@unseenstudios01"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="YouTube"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                  >
+                    <IconYoutube className="h-4 w-4" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/company/collage-digital-marketing-technologies"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="LinkedIn"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                  >
+                    <IconLinkedin className="h-4 w-4" />
+                  </a>
+                
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="overflow-hidden rounded-3xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
+                <div className="flex items-center gap-2 border-b border-black/10 px-5 py-4">
+                  <MapPin className="h-4 w-4 text-orange-500" aria-hidden />
+                  <p className="text-sm font-medium text-black">Studio map</p>
+                </div>
+                <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.568220122809!2d73.8029950737989!3d18.457903571088238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc295500abb3d75%3A0x7ec192ce5faba3be!2sUnseen%20studio%2FTrijja%20Media%20Works!5e0!3m2!1sen!2sin!4v1784527998439!5m2!1sen!2sin"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    className="h-full w-full"
+                    title="Unseen Studio location"
+                  />
+                </div>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal>
+            <motion.form
+              onSubmit={onSubmit}
+              className="relative overflow-hidden rounded-[1.75rem] border border-black/10 bg-white p-6 shadow-[0_28px_100px_rgba(0,0,0,0.08)] md:p-9"
+            >
+              <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl" />
+
+              {error ? (
+                <div className="relative mb-5 flex gap-3 rounded-2xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm text-red-600">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                  <span>{error}</span>
+                </div>
+              ) : null}
+
+              <div className="relative grid gap-5">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <label className="grid gap-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-black/60">Name</span>
+                    <input required name="name" autoComplete="name" className={fieldClass} placeholder="Your name" />
+                  </label>
+                  <label className="grid gap-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-black/60">Email</span>
+                    <input
+                      required
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      className={fieldClass}
+                      placeholder="you@company.com"
+                    />
+                  </label>
+                </div>
+
+                <label className="grid gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-black/60">Phone</span>
+                  <input
+                    type="tel"
+                    name="phone"
+                    autoComplete="tel"
+                    className={fieldClass}
+                    placeholder="Include country code"
+                  />
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-black/60">Service</span>
+                  <select name="service" required className={fieldClass} defaultValue="">
+                    <option value="" disabled className="bg-white text-black/60">
+                      Select a service
+                    </option>
+                    {services.map((s) => (
+                      <option key={s} value={s} className="bg-white">
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-black/60">Message</span>
+                  <textarea
+                    required
+                    name="message"
+                    rows={5}
+                    className={`${fieldClass} min-h-[140px] resize-y`}
+                    placeholder="Goals, timeline, budget range, links…"
+                  />
+                </label>
+
+                <MagneticButton className="pt-1">
+                  <button
+                    type="submit"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 py-4 text-sm font-semibold text-white shadow-[0_0_45px_rgba(255,165,0,0.22)] transition-transform hover:scale-[1.01] hover:shadow-[0_0_60px_rgba(255,165,0,0.35)] sm:w-auto sm:min-w-[220px] sm:px-10"
+                  >
+                    <Send className="h-4 w-4" aria-hidden />
+                    {status === 'sent' ? 'Sent — check WhatsApp' : 'Send via WhatsApp'}
+                  </button>
+                </MagneticButton>
+
+                {waDigits ? (
+                  <p className="text-center text-[11px] text-black/50 sm:text-left">
+                    Submits open WhatsApp to <span className="text-black/80">{waDigits}</span> with your message.
+                  </p>
+                ) : null}
+              </div>
+            </motion.form>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  )
+}
