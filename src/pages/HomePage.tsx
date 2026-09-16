@@ -10,17 +10,56 @@ import './home-premium.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const services = [
-  { number: '01', title: 'Film & Production', copy: 'Cinematic brand films, documentaries and campaign stories built to hold attention.', tags: ['Direction', 'Production', 'Post'], image: 'assets/images/a33.png', to: '/services/film' },
-  { number: '02', title: 'Podcast Production', copy: 'Complete podcast production—from a strong format and studio recording to a polished release.', tags: ['Format', 'Recording', 'Distribution'], image: 'assets/images/podcast.png', to: '/services/podcast' },
-  { number: '03', title: 'Website Design', copy: 'Distinctive, conversion-focused digital experiences shaped around your audience and brand.', tags: ['Strategy', 'UX / UI', 'Responsive'], image: 'assets/images/web.png', to: '/services/website' },
-  { number: '04', title: 'Web Development', copy: 'Fast, scalable websites engineered for performance, accessibility and business growth.', tags: ['Frontend', 'Backend', 'Hosting'], image: 'assets/images/front.png', to: '/services/webdev' },
-  { number: '05', title: 'SEO', copy: 'Technical and content-led search systems that grow discoverability and qualified traffic.', tags: ['Technical', 'Content', 'Local'], image: 'assets/images/seo1.png', to: '/services/seo' },
-  { number: '06', title: 'Digital Marketing', copy: 'Connected content and performance strategies that turn attention into measurable momentum.', tags: ['Social', 'Content', 'Analytics'], image: 'assets/images/digital.png', to: '/services/marketing' },
-  { number: '07', title: 'Paid Advertising', copy: 'Focused media campaigns designed to reach the right audience and improve every conversion.', tags: ['Meta', 'Google', 'Optimisation'], image: 'assets/images/digital1.png', to: '/services/ads' },
-  { number: '08', title: 'ERP Solutions', copy: 'Purpose-built operational systems that simplify workflows, reporting and daily decisions.', tags: ['Planning', 'Automation', 'Reporting'], image: 'assets/images/erp.png', to: '/services/erp' },
-  { number: '09', title: 'Creative Campaigns', copy: 'Integrated campaign ideas that connect strategy, storytelling and execution across channels.', tags: ['Concept', 'Design', 'Activation'], image: 'assets/images/work/social.png', to: '/services/campaign' },
-  { number: '10', title: 'Bulk SMS', copy: 'Reliable high-volume messaging for timely offers, updates, reminders and customer engagement.', tags: ['Messaging', 'Automation', 'Reach'], image: 'assets/images/mobile.png', to: '/services/bulk' },
+const serviceCategories = [
+  {
+    number: '01',
+    title: 'Media & Creative Services',
+    summary: 'Stories, sound and moving images crafted to make brands memorable.',
+    services: [
+      { title: 'Documentary Films', to: '/services/film' },
+      { title: 'Podcasts & Jingles', to: '/services/podcast' },
+      { title: 'Video Advertisements', to: '/services/film' },
+    ],
+  },
+  {
+    number: '02',
+    title: 'Digital Solutions',
+    summary: 'Connected technology and growth systems for modern businesses.',
+    services: [
+      { title: 'Social Media Marketing', to: '/services/marketing' },
+      { title: 'Website Development', to: '/services/webdev' },
+      { title: 'Digital Marketing', to: '/services/marketing' },
+      { title: 'SEO', to: '/services/seo' },
+      { title: 'AI Automation', to: '/services' },
+    ],
+  },
+  {
+    number: '03',
+    title: 'Business & Strategy',
+    summary: 'Clear insights and practical direction for stronger business decisions.',
+    services: [
+      { title: 'Business Analytics', to: '/services' },
+      { title: 'Business Strategy', to: '/services' },
+    ],
+  },
+  {
+    number: '04',
+    title: 'Public Relations',
+    summary: 'Reputation, positioning and communication that build lasting trust.',
+    services: [
+      { title: 'Personal PR', to: '/services' },
+      { title: 'Corporate PR', to: '/services' },
+    ],
+  },
+  {
+    number: '05',
+    title: 'Campaigns & Outreach',
+    summary: 'High-impact communication designed to mobilise audiences at scale.',
+    services: [
+      { title: 'Political Campaigns', to: '/services/campaign' },
+      { title: 'Bulk SMS Marketing', to: '/services/bulk' },
+    ],
+  },
 ]
 
 const projects = [
@@ -341,7 +380,7 @@ export function HomePage() {
           <div className="hp-shell">
             <div className="hp-services-showcase-head" data-reveal>
               <div>
-                <Eyebrow>Everything under one roof</Eyebrow>
+                <Eyebrow>Our services</Eyebrow>
                 <h2>
                   All the expertise to move
                   <br />
@@ -351,14 +390,14 @@ export function HomePage() {
 
               <div className="hp-services-showcase-side">
                 <p>
-                  Strategy, production, technology and growth—explore every service and build the right mix for your next move.
+                  Creative, digital, strategic, PR and outreach expertise—organised clearly so you can find the right support.
                 </p>
 
                 <div className="hp-services-controls">
                   <span className="hp-services-count" aria-live="polite">
                     {String(activeService + 1).padStart(2, '0')}
                     <i />
-                    {String(services.length).padStart(2, '0')}
+                    {String(serviceCategories.length).padStart(2, '0')}
                   </span>
 
                   <button className="hp-services-prev" type="button" aria-label="Previous service">
@@ -410,30 +449,29 @@ export function HomePage() {
               onRealIndexChange={(swiper) => setActiveService(swiper.realIndex)}
               className="hp-services-slider"
             >
-              {services.map((service) => (
-                <SwiperSlide key={service.number}>
-                  <Link
-                    to={service.to}
-                    className="hp-service-card"
-                    data-cursor="EXPLORE"
-                    aria-label={`Explore ${service.title}`}
-                  >
-                    <div className="hp-service-card-media">
-                      <div className="hp-service-card-parallax" data-parallax>
-                        <img src={service.image} alt="" />
-                      </div>
-                      <span className="hp-service-card-number">{service.number}</span>
-                      <span className="hp-service-card-open"><ArrowUpRight /></span>
+              {serviceCategories.map((category) => (
+                <SwiperSlide key={category.number}>
+                  <article className="hp-service-category-card" data-cursor="EXPLORE">
+                    <div className="hp-service-category-top">
+                      <span className="hp-service-card-number">{category.number}</span>
+                      <span className="hp-service-category-mark" aria-hidden="true"><i /><i /><i /></span>
                     </div>
 
-                    <div className="hp-service-card-copy">
-                      <h3>{service.title}</h3>
-                      <p>{service.copy}</p>
-                      <div className="hp-service-card-tags">
-                        {service.tags.map((tag) => <span key={tag}>{tag}</span>)}
-                      </div>
+                    <div className="hp-service-category-copy">
+                      <p>Service category</p>
+                      <h3>{category.title}</h3>
+                      <span>{category.summary}</span>
                     </div>
-                  </Link>
+
+                    <div className="hp-service-category-list">
+                      {category.services.map((service) => (
+                        <Link to={service.to} key={service.title}>
+                          <span>{service.title}</span>
+                          <ArrowUpRight />
+                        </Link>
+                      ))}
+                    </div>
+                  </article>
                 </SwiperSlide>
               ))}
             </Swiper>
