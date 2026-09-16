@@ -10,7 +10,7 @@ function readPreference(): ThemePreference {
   } catch {
     /* ignore */
   }
-  return 'dark'
+  return 'light'
 }
 
 function resolve(p: ThemePreference): ResolvedTheme {
@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = resolved
     document.documentElement.style.colorScheme = resolved
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', resolved === 'light' ? '#f2f2f6' : '#0a0a0b')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', resolved === 'light' ? '#ffffff' : '#171717')
   }, [resolved])
 
   const setPreference = useCallback((p: ThemePreference) => {

@@ -39,12 +39,10 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-white py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-serif">Our Blog</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Insights, stories, and updates from our school community
-          </p>
+        <div className="inner-editorial-heading mb-12" data-reveal>
+          <p className="inner-editorial-kicker">Ideas and perspective</p>
+          <h2>Thinking behind<br /><strong>the making.</strong></h2>
+          <p>Creative insight, studio stories and practical ideas for modern brands.</p>
         </div>
 
         {/* Blog List */}

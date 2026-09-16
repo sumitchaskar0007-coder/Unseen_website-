@@ -63,14 +63,10 @@ const PortfolioPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Our Portfolio
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Explore our creative projects across various categories
-          </p>
+        <div className="inner-editorial-heading mb-12" data-reveal>
+          <p className="inner-editorial-kicker">Selected projects</p>
+          <h2>Work designed to create<br /><strong>real momentum.</strong></h2>
+          <p>Explore films, platforms and campaigns made for ambitious organisations.</p>
         </div>
 
         {/* Filter Bar */}

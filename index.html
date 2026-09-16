@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <base href="%BASE_URL%" />
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/assets/images/lll.png" />
     <link rel="apple-touch-icon" href="/assets/images/lll.png" />
@@ -16,7 +17,7 @@
     <meta name="author" content="Unseen Studio" />
     <meta name="language" content="English" />
     <meta name="revisit-after" content="7 days" />
-    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="theme-color" content="#ffffff" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -51,7 +52,7 @@
     <script>
       (function () {
         try {
-          var p = localStorage.getItem('unseen-studio-theme') || 'dark'
+          var p = localStorage.getItem('unseen-studio-theme') || 'light'
           var r =
             p === 'system'
               ? window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -63,7 +64,7 @@
           document.documentElement.setAttribute('data-theme', r)
           document.documentElement.style.colorScheme = r
           var meta = document.querySelector('meta[name="theme-color"]')
-          if (meta) meta.setAttribute('content', r === 'light' ? '#f2f2f6' : '#0a0a0b')
+          if (meta) meta.setAttribute('content', r === 'light' ? '#ffffff' : '#171717')
         } catch (e) {}
       })()
     </script>

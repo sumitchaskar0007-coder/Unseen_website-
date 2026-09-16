@@ -154,7 +154,7 @@ export function About() {
           {/* LARGE IMAGE */}
           <div className="overflow-hidden rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.12)]">
             <img
-              src="/assets/images/a33.png"
+              src="assets/images/a33.png"
               alt="Camera Studio"
               className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
             />
@@ -166,7 +166,7 @@ export function About() {
             {/* TOP IMAGE */}
             <div className="overflow-hidden rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.08)]">
               <img
-                src="/assets/images/a2.png"
+                src="assets/images/a2.png"
                 alt="Creative Workspace"
                 className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
               />
@@ -175,7 +175,7 @@ export function About() {
             {/* BOTTOM IMAGE */}
             <div className="overflow-hidden rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.08)]">
               <img
-                src="/assets/images/a1.png"
+                src="assets/images/a1.png"
                 alt="Studio Editing"
                 className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
               />

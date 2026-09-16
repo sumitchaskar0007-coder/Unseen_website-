@@ -216,9 +216,7 @@ const WebDev: React.FC = () => {
           <div className="w-9 h-9 rounded-lg bg-neutral-900 flex items-center justify-center">
             <Code2 className="w-5 h-5 text-orange-500" strokeWidth={2} />
           </div>
-          <span className="text-neutral-900 font-bold tracking-tight text-lg">
-            Unseen Studios
-          </span>
+          <img className="page-brand-wordmark" src="assets/images/work/comp_name/name.png" alt="Unseen Studios" />
         </div>
         <nav className="hidden sm:flex items-center gap-8 text-sm font-medium text-neutral-700">
           <a href="#services" className="hover:text-orange-600 transition-colors">Services</a>
@@ -274,7 +272,7 @@ const WebDev: React.FC = () => {
           <IconPanel
             mainIcon={Globe}
             satelliteIcons={[Braces, Terminal, Layers, GitBranch]}
-            imageSrc="/assets/images/web.png"
+            imageSrc="assets/images/web.png"
             imageAlt="Website development workspace"
           />
         </div>
@@ -302,7 +300,7 @@ const WebDev: React.FC = () => {
           mainIcon={Code2}
           satelliteIcons={[Braces, Palette, PenTool, MonitorSmartphone]}
           imageOnLeft={false}
-          imageSrc="/assets/images/front.png"
+          imageSrc="assets/images/front.png"
           imageAlt="HTML, CSS and JavaScript code on screen"
         />
 
@@ -324,7 +322,7 @@ const WebDev: React.FC = () => {
           mainIcon={Layers}
           satelliteIcons={[Puzzle, Braces, GitBranch, Terminal]}
           imageOnLeft={true}
-          imageSrc="/assets/images/framework.png"
+          imageSrc="assets/images/framework.png"
           imageAlt="Responsive frontend framework interface"
         />
 
@@ -346,7 +344,7 @@ const WebDev: React.FC = () => {
           mainIcon={Server}
           satelliteIcons={[Terminal, Database, ShieldCheck, GitBranch]}
           imageOnLeft={false}
-          imageSrc="/assets/images/bc.png"
+          imageSrc="assets/images/bc.png"
           imageAlt="Backend server infrastructure"
         />
 
@@ -368,7 +366,7 @@ const WebDev: React.FC = () => {
           mainIcon={Database}
           satelliteIcons={[ShieldCheck, Server, GitBranch, Terminal]}
           imageOnLeft={true}
-          imageSrc="/assets/images/db.png"
+          imageSrc="assets/images/db.png"
           imageAlt="Database architecture illustration"
         />
 
@@ -391,7 +389,7 @@ const WebDev: React.FC = () => {
             mainIcon={ShoppingCart}
             satelliteIcons={[Palette, Puzzle, Globe, PenTool]}
             imageOnLeft={false}
-            imageSrc="/assets/images/wp.png"
+            imageSrc="assets/images/wp.png"
             imageAlt="WordPress website development"
           />
         </div>
@@ -414,7 +412,7 @@ const WebDev: React.FC = () => {
           mainIcon={Rocket}
           satelliteIcons={[GitBranch, ShieldCheck, Globe, Terminal]}
           imageOnLeft={true}
-          imageSrc="/assets/images/hosting.png"
+          imageSrc="assets/images/hosting.png"
           imageAlt="Website hosting and deployment"
         />
       </section>

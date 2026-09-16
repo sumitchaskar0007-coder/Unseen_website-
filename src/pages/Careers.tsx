@@ -41,7 +41,7 @@ const Careers = () => {
     try {
       setLoading(true);
       const response = await careerAPI.getAll();
-      let activeCareers = (response.data || [])
+      const activeCareers = (response.data || [])
         .filter((career: CareerItem) => career.isActive === true)
         .map((career: any) => ({
           ...career,

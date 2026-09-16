@@ -93,7 +93,7 @@ const Whyunseen = () => {
 <div
   className="absolute inset-0 bg-cover bg-center"
   style={{
-    backgroundImage: "url('/assets/images/w33.png')",
+    backgroundImage: "url('assets/images/w33.png')",
   }}
 ></div>
 
@@ -150,7 +150,7 @@ const Whyunseen = () => {
     
     {/* Main Image */}
     <img
-      src="/assets/images/podcast.png"
+      src="assets/images/podcast.png"
       alt="Creative Studio"
       className="h-[550px] w-full object-cover transition-transform duration-700 hover:scale-105"
     />
@@ -247,7 +247,7 @@ const Whyunseen = () => {
             <div className="absolute -inset-5 bg-orange-100 rounded-[40px] blur-3xl opacity-60"></div>
 
             <img
-              src="/assets/images/meeting.png"
+              src="assets/images/meeting.png"
               alt="team"
               className="relative rounded-[40px] shadow-2xl"
             />
@@ -297,7 +297,7 @@ const Whyunseen = () => {
       <section className="relative py-32 px-6 lg:px-20 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/assets/images/w4.png"
+            src="assets/images/w4.png"
             alt="office"
             className="w-full h-full object-cover"
           />

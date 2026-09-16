@@ -117,7 +117,7 @@ const ERPPage = () => {
             <div className="relative">
               <div className="relative rounded-2xl shadow-2xl overflow-hidden border-4 border-white">
                 <img 
-                  src="/assets/images/erp.png" 
+                  src="assets/images/erp.png"
                   alt="ERP Software Dashboard" 
                   className="w-full h-auto"
                 />
@@ -173,7 +173,7 @@ const ERPPage = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <img 
-                src="/assets/images/erp2.png" 
+                src="assets/images/erp2.png"
                 alt="ERP Analytics" 
                 className="rounded-2xl shadow-2xl border-4 border-white"
               />

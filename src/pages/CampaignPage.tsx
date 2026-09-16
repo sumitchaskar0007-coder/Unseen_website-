@@ -163,7 +163,7 @@ const SocialMediaMarketing = () => {
           <div className="w-9 h-9 rounded-lg bg-neutral-900 flex items-center justify-center">
             <Megaphone className="w-5 h-5 text-orange-500" strokeWidth={2} />
           </div>
-          <span className="text-neutral-900 font-bold tracking-tight text-lg">Unseen Studios</span>
+          <img className="page-brand-wordmark" src="assets/images/work/comp_name/name.png" alt="Unseen Studios" />
         </div>
         <nav className="hidden sm:flex items-center gap-8 text-sm font-medium text-neutral-700">
           <a href="#services" className="hover:text-orange-600 transition-colors">Services</a>

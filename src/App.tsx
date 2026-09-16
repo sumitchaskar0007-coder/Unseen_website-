@@ -44,13 +44,13 @@ const SocialIcons = () => {
   const location = useLocation()
   
   // Don't show social icons on admin pages
-  if (location.pathname.startsWith('/admin')) {
+  if (location.pathname.startsWith('/admin') || location.pathname === '/') {
     return null
   }
   
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      <div className="flex flex-col gap-4">
+    <div className="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6">
+      <div className="flex flex-col gap-3 sm:gap-4">
         {/* WhatsApp */}
         <a
           href={SOCIAL_URLS.whatsapp}
@@ -59,7 +59,7 @@ const SocialIcons = () => {
           className="group relative"
           aria-label="WhatsApp"
         >
-          <div className="relative h-14 w-14 transform rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl">
+          <div className="relative h-12 w-12 transform rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl sm:h-14 sm:w-14">
             <div className="absolute inset-0 rounded-full bg-black/20 opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="flex h-full w-full items-center justify-center">
               <svg
@@ -84,7 +84,7 @@ const SocialIcons = () => {
           href={SOCIAL_URLS.youtube}
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative"
+          className="group relative hidden sm:block"
           aria-label="YouTube"
         >
           <div className="relative h-14 w-14 transform rounded-full bg-gradient-to-br from-[#FF0000] to-[#CC0000] shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl">
@@ -112,7 +112,7 @@ const SocialIcons = () => {
           href={SOCIAL_URLS.instagram}
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative"
+          className="group relative hidden sm:block"
           aria-label="Instagram"
         >
           <div className="relative h-14 w-14 transform rounded-full bg-gradient-to-br from-[#FCAF45] via-[#F77737] to-[#D62976] shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl">
@@ -141,7 +141,7 @@ const SocialIcons = () => {
 
 export default function App() {
   return (
-    <div className="relative min-h-svh bg-void text-foreground">
+    <div className="relative min-h-svh bg-white text-neutral-800">
       <CursorGlow />
       <div className="relative z-10">
         <Routes>
@@ -169,6 +169,10 @@ export default function App() {
             <Route path="/services/marketing" element={<DigitalPage />} />
             <Route path="/services/campaign" element={<CampaignPage />} />
             <Route path="/services/bulk" element={<BulkSmsPage />} />
+            <Route path="/privacy-policy" element={<SimpleLegalPage title="Privacy Policy" />} />
+            <Route path="/terms-of-service" element={<SimpleLegalPage title="Terms of Service" />} />
+            <Route path="/sitemap" element={<SimpleLegalPage title="Sitemap" />} />
+            <Route path="*" element={<NotFoundPage />} />
             {/* <Route path="/services/social" element={<SocialMediaMarketing/>} /> */}
 
 
@@ -192,5 +196,44 @@ export default function App() {
       {/* Social Media Icons */}
       <SocialIcons />
     </div>
+  )
+}
+
+function SimpleLegalPage({ title }: { title: string }) {
+  return (
+    <section className="min-h-[60svh] bg-white px-5 py-20">
+      <div className="mx-auto max-w-3xl rounded-3xl border border-neutral-200 bg-orange-50 p-8 sm:p-12">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-orange-600">Unseen Studio</p>
+        <h1 className="mt-3 text-4xl font-extrabold text-neutral-950">{title}</h1>
+        <p className="mt-5 leading-7 text-neutral-600">
+          This page is being prepared. For questions about your information or our services,
+          please contact Unseen Studio directly.
+        </p>
+        <a
+          href="mailto:hello.trijjamedia@gmail.com"
+          className="mt-7 inline-flex rounded-full bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600"
+        >
+          Contact us
+        </a>
+      </div>
+    </section>
+  )
+}
+
+function NotFoundPage() {
+  return (
+    <section className="grid min-h-[60svh] place-items-center bg-white px-5 py-20 text-center">
+      <div>
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-600">404</p>
+        <h1 className="mt-3 text-4xl font-extrabold text-neutral-950">Page not found</h1>
+        <p className="mt-4 text-neutral-600">The page may have moved or no longer exists.</p>
+        <a
+          href="/"
+          className="mt-7 inline-flex rounded-full bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600"
+        >
+          Back home
+        </a>
+      </div>
+    </section>
   )
 }

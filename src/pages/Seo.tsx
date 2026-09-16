@@ -96,7 +96,7 @@ const Seo: React.FC = () => {
         </div>
         <div className="hero-image">
           <img 
-            src="/assets/images/seo1.png" 
+            src="assets/images/seo1.png"
             alt="SEO professionals analyzing data and search engine optimization strategies"
             className="seo-hero-image"
           />
@@ -236,7 +236,7 @@ const Seo: React.FC = () => {
       {/* Full Width Image Section */}
       <section className="seo-full-image">
         <img 
-          src="/assets/images/seo2.png" 
+          src="assets/images/seo2.png"
           alt="SEO growth and business success visualization"
           className="full-width-image"
         />

@@ -1,0 +1,21 @@
+.inner-page-hero { position:relative; min-height:clamp(430px,48vw,650px); padding:150px 24px 70px; overflow:hidden; display:flex; align-items:flex-end; background:#090909!important; color:#fff; isolation:isolate; }
+.inner-page-hero:after { content:''; position:absolute; inset:0; z-index:-2; background:radial-gradient(circle at 85% 18%,rgba(255,255,255,.08),transparent 23%),linear-gradient(120deg,#050505 0%,#151515 55%,#070707 100%); }
+.inner-page-wave { position:absolute; z-index:-1; width:125%; height:330px; left:-10%; border:1px solid rgba(255,255,255,.12); border-radius:50%; transform:rotate(8deg); box-shadow:0 12px 0 rgba(255,255,255,.025),0 24px 0 rgba(255,255,255,.022),0 36px 0 rgba(255,255,255,.02),0 48px 0 rgba(255,255,255,.018),0 60px 0 rgba(255,255,255,.016),0 72px 0 rgba(255,255,255,.014); }
+.inner-page-wave.wave-a { top:-90px; }
+.inner-page-wave.wave-b { top:135px; left:-20%; transform:rotate(-7deg); opacity:.72; }
+.inner-page-wave.wave-c { bottom:-230px; left:12%; transform:rotate(5deg); opacity:.55; }
+.inner-page-orb { position:absolute; width:17px; height:17px; border:1px solid rgba(255,255,255,.26); border-radius:50%; }
+.inner-page-orb.orb-a { left:31%; top:46%; background:#111; }
+.inner-page-orb.orb-b { right:2%; top:-7px; width:52px; height:52px; }
+.inner-page-hero-content { width:min(100%,1500px); margin-inline:auto; position:relative; z-index:2; }
+.inner-page-hero-content>p { margin:0 0 22px; color:rgba(255,255,255,.46); font-size:10px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; }
+.inner-page-hero h1 { margin:0; max-width:1000px; color:#fff; font-size:clamp(4.6rem,9vw,9.5rem); font-weight:700; line-height:.82; letter-spacing:-.075em; }
+.inner-page-hero nav { width:max-content; margin-top:38px; padding:14px 20px; display:flex; align-items:center; gap:10px; border:1px solid rgba(255,255,255,.18); border-radius:12px; background:rgba(255,255,255,.08); backdrop-filter:blur(12px); color:rgba(255,255,255,.75); font-size:13px; font-weight:650; }
+.inner-page-hero nav a { color:#fff; }
+#main.site-inner-page>.inner-page-hero { background:#090909!important; color:#fff; }
+@media (max-width:700px) {
+  .inner-page-hero { min-height:400px; padding:120px 18px 48px; }
+  .inner-page-hero h1 { font-size:clamp(3.6rem,17vw,5.8rem); }
+  .inner-page-hero-content>p { max-width:270px; line-height:1.5; }
+  .inner-page-wave { width:180%; left:-40%; }
+}

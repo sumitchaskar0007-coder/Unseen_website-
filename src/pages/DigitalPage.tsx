@@ -142,7 +142,7 @@ const DigitalPage = () => {
             <div className="relative">
               <div className="relative rounded-2xl shadow-2xl overflow-hidden border-4 border-white">
                 <img 
-                  src="/assets/images/digital.png" 
+                  src="assets/images/digital.png"
                   alt="Digital Marketing Dashboard" 
                   className="w-full h-auto"
                   onError={(e) => {
@@ -254,7 +254,7 @@ const DigitalPage = () => {
             </div>
             <div>
               <img 
-                src="/assets/images/digital1.png" 
+                src="assets/images/digital1.png"
                 alt="Digital Marketing Analytics" 
                 className="rounded-2xl shadow-2xl border-4 border-white"
                 onError={(e) => {

@@ -62,12 +62,10 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Gallery</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore memories and moments from our school events, activities, and celebrations
-          </p>
+        <div className="inner-editorial-heading mb-12" data-reveal>
+          <p className="inner-editorial-kicker">Behind the work</p>
+          <h2>Moments from<br /><strong>inside the studio.</strong></h2>
+          <p>Production, collaboration and the details that shape every Unseen Studios project.</p>
         </div>
 
         {/* Search and Filter */}

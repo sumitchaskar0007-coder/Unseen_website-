@@ -13,7 +13,6 @@ type Item = {
   cat: Exclude<Cat, 'All'>
   image: string
 }
-
 const items: Item[] = [
   {
     title: 'Neon Velocity Launch',
@@ -52,15 +51,12 @@ const items: Item[] = [
       'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&w=1200&q=80',
   },
 ]
-
 export function Portfolio() {
   const [filter, setFilter] = useState<Cat>('All')
-
   const visible = useMemo(() => {
     if (filter === 'All') return items
     return items.filter((i) => i.cat === filter)
   }, [filter])
-
   return (
     <section id="portfolio" className="relative border-t border-foreground/[0.06] bg-void py-24 md:py-32">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.06),transparent_60%)]" />
