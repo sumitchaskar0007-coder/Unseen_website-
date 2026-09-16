@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronRight, Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { serviceCategories } from '../data/serviceCategories'
 
 const mainLinks = [
   ['Home', '/'],
@@ -11,19 +12,14 @@ const mainLinks = [
   ['Journal', '/blog'],
 ]
 
-const serviceLinks = [
-  ['Film & Production', '/services/film'],
-  ['Podcasts & Audio', '/services/podcast'],
-  ['Web Development', '/services/webdev'],
-  ['Digital Marketing', '/services/marketing'],
-  ['SEO & Search', '/services/seo'],
-]
-
 export function Header() {
   const location = useLocation()
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
+  const [activeServiceCategory, setActiveServiceCategory] = useState(0)
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
+  const [mobileServiceCategory, setMobileServiceCategory] = useState<number | null>(0)
   const [scrolled, setScrolled] = useState(false)
 
   const onDarkHero = false
@@ -47,6 +43,7 @@ export function Header() {
   useEffect(() => {
     setMenuOpen(false)
     setServicesOpen(false)
+    setMobileServicesOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
@@ -112,6 +109,7 @@ export function Header() {
             <button
               type="button"
               aria-expanded={servicesOpen}
+              className={location.pathname.startsWith('/services') ? 'is-active' : ''}
               onClick={() =>
                 setServicesOpen((value) => !value)
               }
@@ -140,22 +138,49 @@ export function Header() {
                     duration: 0.22,
                   }}
                 >
-                  {serviceLinks.map(
-                    ([label, path], index) => (
-                      <Link
-                        key={path}
-                        to={path}
+                  <div className="site-service-categories" role="menu" aria-label="Service categories">
+                    {serviceCategories.map((category, index) => (
+                      <button
+                        type="button"
+                        key={category.title}
+                        className={activeServiceCategory === index ? 'is-active' : ''}
+                        onMouseEnter={() => setActiveServiceCategory(index)}
+                        onFocus={() => setActiveServiceCategory(index)}
+                        onClick={() => setActiveServiceCategory(index)}
+                        role="menuitem"
                       >
-                        <span>
-                          0{index + 1}
-                        </span>
+                        <span>{category.number}</span>
+                        {category.title}
+                        <ChevronRight />
+                      </button>
+                    ))}
 
-                        {label}
+                    <Link to="/services" className="site-services-all-link">
+                      View all services
+                      <ArrowUpRight />
+                    </Link>
+                  </div>
 
-                        <ArrowUpRight />
-                      </Link>
-                    )
-                  )}
+                  <div className="site-service-submenu">
+                    <motion.div
+                      key={serviceCategories[activeServiceCategory].title}
+                      initial={{ opacity: 0, x: 12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: .2 }}
+                    >
+                      <p>{serviceCategories[activeServiceCategory].title}</p>
+                      <span>{serviceCategories[activeServiceCategory].summary}</span>
+
+                      <div>
+                        {serviceCategories[activeServiceCategory].services.map((service) => (
+                          <Link key={service.title} to={service.to}>
+                            {service.title}
+                            <ArrowUpRight />
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -238,44 +263,98 @@ export function Header() {
 
             {/* MOBILE NAV */}
             <nav aria-label="Mobile navigation">
-
-              {[
-                ...mainLinks,
-                ['Services', '/services'],
-                ['Contact', '/contact'],
-              ].map(([label, path], index) => (
-
+              {mainLinks.map(([label, path], index) => (
                 <motion.div
                   key={path}
-                  initial={{
-                    y: 45,
-                    opacity: 0,
-                  }}
-                  animate={{
-                    y: 0,
-                    opacity: 1,
-                  }}
-                  transition={{
-                    delay: 0.18 + index * 0.055,
-                  }}
+                  initial={{ y: 45, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.18 + index * 0.055 }}
                 >
-
                   <Link to={path}>
-
-                    <span>
-                      0{index + 1}
-                    </span>
-
+                    <span>0{index + 1}</span>
                     {label}
-
                     <ArrowUpRight />
-
                   </Link>
-
                 </motion.div>
-
               ))}
 
+              <motion.div
+                className="site-mobile-services"
+                initial={{ y: 45, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: .46 }}
+              >
+                <button
+                  type="button"
+                  className="site-mobile-services-toggle"
+                  aria-expanded={mobileServicesOpen}
+                  onClick={() => setMobileServicesOpen((value) => !value)}
+                >
+                  <span>06</span>
+                  Services
+                  <ChevronDown className={mobileServicesOpen ? 'is-open' : ''} />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {mobileServicesOpen && (
+                    <motion.div
+                      className="site-mobile-services-panel"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: .35 }}
+                    >
+                      <Link to="/services" className="site-mobile-view-all">
+                        View all services <ArrowUpRight />
+                      </Link>
+
+                      {serviceCategories.map((category, index) => (
+                        <div className="site-mobile-service-category" key={category.title}>
+                          <button
+                            type="button"
+                            aria-expanded={mobileServiceCategory === index}
+                            onClick={() => setMobileServiceCategory((value) => value === index ? null : index)}
+                          >
+                            <span>{category.number}</span>
+                            {category.title}
+                            <ChevronDown className={mobileServiceCategory === index ? 'is-open' : ''} />
+                          </button>
+
+                          <AnimatePresence initial={false}>
+                            {mobileServiceCategory === index && (
+                              <motion.div
+                                className="site-mobile-service-links"
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                              >
+                                {category.services.map((service) => (
+                                  <Link to={service.to} key={service.title}>
+                                    {service.title}
+                                    <ArrowUpRight />
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 45, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: .52 }}
+              >
+                <Link to="/contact">
+                  <span>07</span>
+                  Contact
+                  <ArrowUpRight />
+                </Link>
+              </motion.div>
             </nav>
 
             {/* MOBILE META */}
