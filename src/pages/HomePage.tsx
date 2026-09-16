@@ -4,17 +4,23 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowLeft, ArrowRight, ArrowUpRight, Minus, Plus, Quote } from 'lucide-react'
 import { FaInstagram, FaLinkedinIn } from 'react-icons/fa'
-import { A11y, Navigation, Pagination } from 'swiper/modules'
+import { A11y, Autoplay, EffectCoverflow, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import './home-premium.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const services = [
-  { number: '01', title: 'Film & Production', copy: 'Documentaries, brand films and campaign stories shaped with cinematic craft.', tags: ['Direction', 'Production', 'Post'] },
-  { number: '02', title: 'Brand & Social', copy: 'Distinctive brand systems and social ideas that earn attention and build relevance.', tags: ['Strategy', 'Identity', 'Campaigns'] },
-  { number: '03', title: 'Digital Experiences', copy: 'Fast, expressive websites and products designed around real business outcomes.', tags: ['UX / UI', 'Web', 'ERP'] },
-  { number: '04', title: 'Growth Marketing', copy: 'Focused performance systems that turn creative momentum into measurable growth.', tags: ['SEO', 'Paid Media', 'Analytics'] },
+  { number: '01', title: 'Film & Production', copy: 'Cinematic brand films, documentaries and campaign stories built to hold attention.', tags: ['Direction', 'Production', 'Post'], image: 'assets/images/a33.png', to: '/services/film' },
+  { number: '02', title: 'Podcast Production', copy: 'Complete podcast production—from a strong format and studio recording to a polished release.', tags: ['Format', 'Recording', 'Distribution'], image: 'assets/images/podcast.png', to: '/services/podcast' },
+  { number: '03', title: 'Website Design', copy: 'Distinctive, conversion-focused digital experiences shaped around your audience and brand.', tags: ['Strategy', 'UX / UI', 'Responsive'], image: 'assets/images/web.png', to: '/services/website' },
+  { number: '04', title: 'Web Development', copy: 'Fast, scalable websites engineered for performance, accessibility and business growth.', tags: ['Frontend', 'Backend', 'Hosting'], image: 'assets/images/front.png', to: '/services/webdev' },
+  { number: '05', title: 'SEO', copy: 'Technical and content-led search systems that grow discoverability and qualified traffic.', tags: ['Technical', 'Content', 'Local'], image: 'assets/images/seo1.png', to: '/services/seo' },
+  { number: '06', title: 'Digital Marketing', copy: 'Connected content and performance strategies that turn attention into measurable momentum.', tags: ['Social', 'Content', 'Analytics'], image: 'assets/images/digital.png', to: '/services/marketing' },
+  { number: '07', title: 'Paid Advertising', copy: 'Focused media campaigns designed to reach the right audience and improve every conversion.', tags: ['Meta', 'Google', 'Optimisation'], image: 'assets/images/digital1.png', to: '/services/ads' },
+  { number: '08', title: 'ERP Solutions', copy: 'Purpose-built operational systems that simplify workflows, reporting and daily decisions.', tags: ['Planning', 'Automation', 'Reporting'], image: 'assets/images/erp.png', to: '/services/erp' },
+  { number: '09', title: 'Creative Campaigns', copy: 'Integrated campaign ideas that connect strategy, storytelling and execution across channels.', tags: ['Concept', 'Design', 'Activation'], image: 'assets/images/work/social.png', to: '/services/campaign' },
+  { number: '10', title: 'Bulk SMS', copy: 'Reliable high-volume messaging for timely offers, updates, reminders and customer engagement.', tags: ['Messaging', 'Automation', 'Reach'], image: 'assets/images/mobile.png', to: '/services/bulk' },
 ]
 
 const projects = [
@@ -74,6 +80,7 @@ export function HomePage() {
   const cursorLabel = useRef<HTMLSpanElement>(null)
   const [filter, setFilter] = useState('All')
   const [openFaq, setOpenFaq] = useState(0)
+  const [activeService, setActiveService] = useState(0)
 
   useLayoutEffect(() => {
     if (!root.current) return
@@ -328,178 +335,108 @@ export function HomePage() {
 
         </section>
 
-        {/* ================= ABOUT ================= */}
+        {/* ================= ALL SERVICES SLIDER ================= */}
 
-        <section
-          className="hp-section hp-about"
-          id="about"
-        >
+        <section className="hp-section hp-services-showcase" id="services">
           <div className="hp-shell">
-
-            <div
-              className="hp-about-head"
-              data-reveal
-            >
-              <Eyebrow>
-                Built for what is next
-              </Eyebrow>
-
-              <h2>
-                We bridge the gap between <em>bold ideas</em> and modern digital experiences.
-              </h2>
-            </div>
-
-            <div className="hp-about-grid">
-
-              <div
-                className="hp-about-tall"
-                data-clip
-              >
-                <img
-                  src="assets/images/a33.png"
-                  alt="Cinema camera on the Unseen Studio set"
-                  data-parallax
-                />
+            <div className="hp-services-showcase-head" data-reveal>
+              <div>
+                <Eyebrow>Everything under one roof</Eyebrow>
+                <h2>
+                  All the expertise to move
+                  <br />
+                  <em>your brand forward.</em>
+                </h2>
               </div>
 
-              <div
-                className="hp-about-copy"
-                data-reveal
-              >
+              <div className="hp-services-showcase-side">
                 <p>
-                  Strategy gives the work direction. Craft gives it character. Technology gives it reach.
-                  We bring all three under one roof to create work people notice and businesses can measure.
+                  Strategy, production, technology and growth—explore every service and build the right mix for your next move.
                 </p>
 
-                <Link
-                  to="/about"
-                  className="hp-text-link"
-                >
-                  Our studio
-                  <ArrowRight />
-                </Link>
+                <div className="hp-services-controls">
+                  <span className="hp-services-count" aria-live="polite">
+                    {String(activeService + 1).padStart(2, '0')}
+                    <i />
+                    {String(services.length).padStart(2, '0')}
+                  </span>
+
+                  <button className="hp-services-prev" type="button" aria-label="Previous service">
+                    <ArrowLeft />
+                  </button>
+
+                  <button className="hp-services-next" type="button" aria-label="Next service">
+                    <ArrowRight />
+                  </button>
+                </div>
               </div>
-
-              <div
-                className="hp-about-small"
-                data-clip
-              >
-                <img
-                  src="assets/images/h22.png"
-                  alt="Unseen Studio workspace"
-                  data-parallax
-                />
-              </div>
-
             </div>
-
-            <div
-              className="hp-stats"
-              data-reveal
-            >
-              {[
-                [99, '%', 'Client satisfaction'],
-                [436, '+', 'Projects completed'],
-                [12, '+', 'Years of experience'],
-                [50, '+', 'Active partners']
-              ].map(
-                ([value, suffix, label]) => (
-                  <div key={String(label)}>
-
-                    <strong
-                      data-count={value}
-                      data-suffix={suffix}
-                    >
-                      0{suffix}
-                    </strong>
-
-                    <span>
-                      {label}
-                    </span>
-
-                  </div>
-                )
-              )}
-            </div>
-
           </div>
-        </section>
 
-        {/* ================= SERVICES ================= */}
-
-        <section
-          className="hp-section hp-services"
-          id="services"
-        >
-          <div className="hp-shell">
-
-            <div
-              className="hp-section-head"
-              data-reveal
+          <div className="hp-services-slider-wrap" data-clip>
+            <Swiper
+              modules={[Autoplay, EffectCoverflow, Navigation, Pagination, A11y]}
+              effect="coverflow"
+              coverflowEffect={{
+                rotate: 0,
+                stretch: -18,
+                depth: 135,
+                modifier: 1.15,
+                slideShadows: false,
+              }}
+              centeredSlides
+              grabCursor
+              loop
+              speed={900}
+              autoplay={{
+                delay: 3200,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              navigation={{
+                prevEl: '.hp-services-prev',
+                nextEl: '.hp-services-next',
+              }}
+              pagination={{
+                clickable: true,
+                dynamicBullets: true,
+              }}
+              breakpoints={{
+                0: { slidesPerView: 1.08, spaceBetween: 14 },
+                640: { slidesPerView: 1.45, spaceBetween: 22 },
+                1024: { slidesPerView: 2.25, spaceBetween: 30 },
+                1440: { slidesPerView: 2.7, spaceBetween: 36 },
+              }}
+              onRealIndexChange={(swiper) => setActiveService(swiper.realIndex)}
+              className="hp-services-slider"
             >
-
-              <div>
-
-                <Eyebrow dark>
-                  What we do
-                </Eyebrow>
-
-                <h2>
-                  Smart solutions for
-                  <br />
-                  <em>modern brands.</em>
-                </h2>
-
-              </div>
-
-              <p>
-                One senior, connected team from first thought to final frame—and everything that happens after launch.
-              </p>
-
-            </div>
-
-            <div className="hp-service-list">
-
               {services.map((service) => (
-                <Link
-                  to="/services"
-                  className="hp-service"
-                  key={service.number}
-                  data-reveal
-                  data-cursor="OPEN"
-                >
+                <SwiperSlide key={service.number}>
+                  <Link
+                    to={service.to}
+                    className="hp-service-card"
+                    data-cursor="EXPLORE"
+                    aria-label={`Explore ${service.title}`}
+                  >
+                    <div className="hp-service-card-media">
+                      <div className="hp-service-card-parallax" data-parallax>
+                        <img src={service.image} alt="" />
+                      </div>
+                      <span className="hp-service-card-number">{service.number}</span>
+                      <span className="hp-service-card-open"><ArrowUpRight /></span>
+                    </div>
 
-                  <span className="hp-service-number">
-                    {service.number}
-                  </span>
-
-                  <h3>
-                    {service.title}
-                  </h3>
-
-                  <p>
-                    {service.copy}
-                  </p>
-
-                  <div className="hp-service-tags">
-
-                    {service.tags.map((tag) => (
-                      <span key={tag}>
-                        {tag}
-                      </span>
-                    ))}
-
-                  </div>
-
-                  <span className="hp-service-arrow">
-                    <ArrowUpRight />
-                  </span>
-
-                </Link>
+                    <div className="hp-service-card-copy">
+                      <h3>{service.title}</h3>
+                      <p>{service.copy}</p>
+                      <div className="hp-service-card-tags">
+                        {service.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                      </div>
+                    </div>
+                  </Link>
+                </SwiperSlide>
               ))}
-
-            </div>
-
+            </Swiper>
           </div>
         </section>
 
