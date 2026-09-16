@@ -20,7 +20,7 @@ export function Process() {
     <section
       id="process"
       ref={ref}
-      className="relative border-t border-foreground/[0.06] bg-charcoal py-24 md:py-32"
+      className="process-section relative border-t border-foreground/[0.06] bg-charcoal py-24 md:py-32"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.07),transparent_55%)]" />
 

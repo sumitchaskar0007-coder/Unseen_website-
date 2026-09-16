@@ -415,6 +415,11 @@ export function HomePage() {
                     <div className="hp-service-category-list">
                       {category.services.map((service) => (
                         <Link to={service.to} key={service.title}>
+                          <span className={`hp-service-row-visual ${service.images?.length ? 'has-images' : ''}`} aria-hidden="true">
+                            {service.images?.map((image, imageIndex) => (
+                              <img src={image} alt="" key={image} style={{ '--image-index': imageIndex } as React.CSSProperties} />
+                            ))}
+                          </span>
                           <span>{service.title}</span>
                           <ArrowUpRight />
                         </Link>

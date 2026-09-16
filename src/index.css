@@ -258,6 +258,33 @@ h6,
 .site-inner-page select { border-color:var(--site-line); background:#fff; color:#171717; }
 .site-inner-page :focus-visible { outline-color:#171717; }
 
+/* Process is intentionally light; keep its text and cards readable on the warm canvas. */
+.site-inner-page .process-section {
+  background-color:#f7f3e7!important;
+  background-image:none!important;
+  color:#171717!important;
+  border-color:rgba(23,23,23,.12)!important;
+}
+.site-inner-page .process-section>[class*="pointer-events-none"] {
+  background:radial-gradient(ellipse at center,rgba(23,23,23,.045),transparent 58%)!important;
+}
+.site-inner-page .process-section .text-foreground,
+.site-inner-page .process-section .text-ink-strong,
+.site-inner-page .process-section .text-electric\/90,
+.site-inner-page .process-section .text-electric { color:#171717!important; }
+.site-inner-page .process-section .text-muted { color:#5f5a54!important; }
+.site-inner-page .process-section [class*="border-foreground"] { border-color:rgba(23,23,23,.16)!important; }
+.site-inner-page .process-section [class*="bg-foreground"] {
+  background-color:rgba(23,23,23,.055)!important;
+  color:#171717!important;
+}
+.site-inner-page .process-section .glass {
+  border:1px solid rgba(23,23,23,.14)!important;
+  background:rgba(255,255,255,.26)!important;
+  color:#171717!important;
+  box-shadow:0 16px 42px rgba(23,23,23,.055)!important;
+}
+
 /* Shared editorial content language for Services, Work, Journal and Gallery. */
 .inner-editorial-page { padding:clamp(85px,9vw,150px) 0; background:#f7f3e7; }
 .inner-editorial-intro { width:min(100% - 40px,1500px); margin:0 auto clamp(65px,8vw,120px); padding:0!important; display:grid; grid-template-columns:1fr auto; gap:50px; align-items:end; background:transparent!important; }
