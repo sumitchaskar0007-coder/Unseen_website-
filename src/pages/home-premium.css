@@ -1,6 +1,6 @@
 @import 'swiper/swiper-bundle.css';
 
-.hp { --orange:#121212; --ink:#121212; --paper:#f4f4f2; --cream:#fff; --line:rgba(18,18,18,.16); background:var(--paper); color:var(--ink); font-family:'Manrope',sans-serif; overflow:hidden; }
+.hp { --orange:#121212; --ink:#121212; --paper:#f7f3e7; --cream:#f7f3e7; --line:rgba(18,18,18,.16); background:var(--paper); color:var(--ink); font-family:'Manrope',sans-serif; overflow:hidden; }
 .hp * { box-sizing:border-box; }
 .hp-shell { width:min(100% - 40px, 1480px); margin-inline:auto; }
 .hp-section { padding:clamp(90px,10vw,170px) 0; }
@@ -485,12 +485,12 @@
 .hp-cursor.is-active { background:#fff; color:#000; }
 
 /* Alternating white/black section rhythm */
-.hp { background:#fff; color:#121212; }
+.hp { background:#f7f3e7; color:#121212; }
 .hp-about,
 .hp-work,
 .hp-awards,
 .hp-faq,
-.hp-clients { background:#fff; color:#121212; }
+.hp-clients { background:#f7f3e7; color:#121212; }
 
 .hp-about h2 em,
 .hp-work h2 em,
@@ -529,7 +529,7 @@
 .hp-client-track i { color:#777; }
 
 /* Warm-white opening hero */
-.hp-hero { background:#f3efe7; color:#121212; }
+.hp-hero { background:#f7f3e7; color:#121212; }
 .hp-title-accent { color:#121212; }
 .hp-hero .hp-eyebrow { color:#66615a; }
 .hp-hero .hp-eyebrow span { background:#121212; }
