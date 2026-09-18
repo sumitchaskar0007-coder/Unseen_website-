@@ -33,7 +33,7 @@ Run the command printed by `pm2 startup` to enable automatic restart after a VPS
 Check the application:
 
 ```bash
-curl http://127.0.0.1:5001/api/health
+curl http://127.0.0.1:5040/api/health
 pm2 logs unseen-studios
 ```
 
