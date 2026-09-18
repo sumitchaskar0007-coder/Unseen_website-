@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import { onlineImages } from '../../data/onlineImages'
 
 export function Hero() {
   const shouldReduceMotion = useReducedMotion()
@@ -15,8 +16,8 @@ export function Hero() {
         <div className="relative flex justify-center lg:justify-start">
           <div className="relative h-[420px] w-full max-w-[520px] overflow-hidden rounded-none bg-[#ece4e0] sm:h-[500px] lg:h-[560px] lg:max-w-[620px]">
             <img
-              src="assets/images/h22.png"
-              alt="Unseen Studio team"
+              src={onlineImages.agencyTeam}
+              alt="Creative agency team working together"
               className="h-full w-full object-cover object-center"
             />
           </div>

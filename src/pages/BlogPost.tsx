@@ -5,6 +5,8 @@ import ReadingProgressBar from '../components/ReadingProgressBar';
 import ShareButtons from '../components/ShareButtons';
 import { FaUser, FaCalendar, FaClock, FaEye, FaArrowLeft } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { cmsService } from '../services/cmsService';
+import { onlineImages } from '../data/onlineImages';
 
 interface BlogPost {
   _id: string;
@@ -34,6 +36,27 @@ const BlogPost = () => {
 
   const fetchBlog = async () => {
     try {
+      await cmsService.sync('blogs').catch(() => [])
+      const local = cmsService.published('blogs').find((item) => String(item.slug || item.id) === slug);
+      if (local) {
+        const localBlog: BlogPost = {
+          _id: local.id,
+          title: String(local.name || 'Untitled article'),
+          slug: String(local.slug || local.id),
+          metaTitle: String(local.name || 'Unseen Studios'),
+          metaDescription: String(local.shortDescription || ''),
+          content: String(local.description || local.shortDescription || ''),
+          author: String(local.author || 'Unseen Studios'),
+          featuredImage: String(local.image || ''),
+          readingTime: Math.max(1, Math.ceil(String(local.description || '').split(/\s+/).length / 200)),
+          tags: String(local.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean),
+          views: 0,
+          createdAt: String(local.publishDate || new Date().toISOString()),
+        };
+        setBlog(localBlog);
+        document.title = localBlog.metaTitle;
+        return;
+      }
       const response = await blogAPI.getBySlug(slug!);
       setBlog(response.data);
       document.title = response.data.metaTitle;
@@ -42,7 +65,15 @@ const BlogPost = () => {
         metaDescription.setAttribute('content', response.data.metaDescription);
       }
     } catch (error) {
-      toast.error('Blog post not found');
+      const fallback = {
+        'brand-distinction': { title: 'Why distinct brands outperform loud ones', content: '<p>A useful brand is not the one that says the most. It is the one people recognise, understand and remember. Distinction comes from a clear point of view repeated with care across every experience.</p><p>Start with the truth only your brand can own. Express it consistently, remove what does not help, and let recognition compound over time.</p>', featuredImage: onlineImages.businessPlanning, createdAt: '2026-08-28' },
+        'films-people-watch': { title: 'Making a brand film people choose to watch', content: '<p>The best brand films earn attention through a human idea, a confident point of view and disciplined craft. They respect the audience before they ask for anything in return.</p><p>Begin with tension, build around a real emotion and make every frame serve the story.</p>', featuredImage: onlineImages.cameraOperator, createdAt: '2026-08-12' },
+        'websites-for-momentum': { title: 'Designing websites for momentum, not decoration', content: '<p>A modern website should make the next decision feel obvious—for the visitor and for the business. Strong hierarchy, useful content and fast feedback matter more than ornamental complexity.</p><p>Design the journey around intent, then make each interaction remove friction.</p>', featuredImage: onlineImages.developerWorkspace, createdAt: '2026-07-24' },
+      }[slug || '']
+      if (fallback) {
+        setBlog({ _id: slug!, slug: slug!, metaTitle: fallback.title, metaDescription: fallback.title, author: 'Unseen Studios', readingTime: 4, tags: ['Perspective'], views: 0, ...fallback })
+        document.title = `${fallback.title} | Unseen Studios`
+      } else toast.error('Blog post not found');
     } finally {
       setLoading(false);
     }
@@ -133,26 +164,26 @@ const BlogPost = () => {
 
           {/* Call to Action */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 text-center my-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Join Our School?</h3>
-            <p className="text-gray-600 mb-6">Book a school visit or enquire now to learn more about our programs</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Have an idea worth building?</h3>
+            <p className="text-gray-600 mb-6">Bring us the challenge. We’ll help shape the strategy, story and experience around it.</p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link
                 to="/contact"
                 className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
               >
-                Book a School Visit
+                Start a conversation
               </Link>
               <Link
-                to="/contact"
+                to="/services"
                 className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition"
               >
-                Enquire Now
+                Explore our services
               </Link>
               <Link
-                to="/contact"
+                to="/portfolio"
                 className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition"
               >
-                Contact Us
+                View our work
               </Link>
             </div>
           </div>

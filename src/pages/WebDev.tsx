@@ -18,6 +18,7 @@ import {
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
+import { onlineImages } from '../data/onlineImages';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                             */
@@ -272,8 +273,8 @@ const WebDev: React.FC = () => {
           <IconPanel
             mainIcon={Globe}
             satelliteIcons={[Braces, Terminal, Layers, GitBranch]}
-            imageSrc="assets/images/web.png"
-            imageAlt="Website development workspace"
+            imageSrc={onlineImages.developerWorkspace}
+            imageAlt="Developer working in a modern workspace"
           />
         </div>
       </section>
@@ -300,8 +301,8 @@ const WebDev: React.FC = () => {
           mainIcon={Code2}
           satelliteIcons={[Braces, Palette, PenTool, MonitorSmartphone]}
           imageOnLeft={false}
-          imageSrc="assets/images/front.png"
-          imageAlt="HTML, CSS and JavaScript code on screen"
+          imageSrc={onlineImages.codeScreen}
+          imageAlt="Frontend code displayed on a monitor"
         />
 
         <SectionBlock
@@ -322,8 +323,8 @@ const WebDev: React.FC = () => {
           mainIcon={Layers}
           satelliteIcons={[Puzzle, Braces, GitBranch, Terminal]}
           imageOnLeft={true}
-          imageSrc="assets/images/framework.png"
-          imageAlt="Responsive frontend framework interface"
+          imageSrc={onlineImages.webDevelopment}
+          imageAlt="Web application code in development"
         />
 
         <SectionBlock
@@ -344,8 +345,8 @@ const WebDev: React.FC = () => {
           mainIcon={Server}
           satelliteIcons={[Terminal, Database, ShieldCheck, GitBranch]}
           imageOnLeft={false}
-          imageSrc="assets/images/bc.png"
-          imageAlt="Backend server infrastructure"
+          imageSrc={onlineImages.serverRoom}
+          imageAlt="Professional server infrastructure"
         />
 
         <SectionBlock
@@ -366,8 +367,8 @@ const WebDev: React.FC = () => {
           mainIcon={Database}
           satelliteIcons={[ShieldCheck, Server, GitBranch, Terminal]}
           imageOnLeft={true}
-          imageSrc="assets/images/db.png"
-          imageAlt="Database architecture illustration"
+          imageSrc={onlineImages.analyticsDashboard}
+          imageAlt="Data dashboard used for application insights"
         />
 
         <div id="wordpress">
@@ -389,8 +390,8 @@ const WebDev: React.FC = () => {
             mainIcon={ShoppingCart}
             satelliteIcons={[Palette, Puzzle, Globe, PenTool]}
             imageOnLeft={false}
-            imageSrc="assets/images/wp.png"
-            imageAlt="WordPress website development"
+            imageSrc={onlineImages.developerWorkspace}
+            imageAlt="Content-managed website development workspace"
           />
         </div>
 
@@ -412,8 +413,8 @@ const WebDev: React.FC = () => {
           mainIcon={Rocket}
           satelliteIcons={[GitBranch, ShieldCheck, Globe, Terminal]}
           imageOnLeft={true}
-          imageSrc="assets/images/hosting.png"
-          imageAlt="Website hosting and deployment"
+          imageSrc={onlineImages.serverRoom}
+          imageAlt="Data center servers for website hosting"
         />
       </section>
 

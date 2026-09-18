@@ -1,5 +1,8 @@
-import { ArrowRight, ArrowUpRight, Play } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { EditablePageSections } from '../components/EditablePageSections'
+import { usePageContent } from '../data/pageContent'
+import { onlineImages } from '../data/onlineImages'
 import './about-premium.css'
 
 const values = [
@@ -8,30 +11,42 @@ const values = [
   ['03', 'Grow together', 'We work as one team with our clients—open, accountable and invested in the outcome.'],
 ]
 
+const disciplines = ['Strategy', 'Branding', 'Film', 'Web', 'Digital growth']
+
 export default function AboutPage() {
+  const content = usePageContent('about')
+  const [titleLead, ...titleRest] = content.title.split('\n')
+
   return (
     <div className="about-premium">
       <section className="about-intro">
         <div className="about-shell">
           <div className="about-intro-head" data-reveal>
-            <p className="about-kicker">Who we are</p>
-            <h2>Creating impactful brand<br /><em>experiences.</em></h2>
+            <p className="about-kicker">{content.eyebrow}</p>
+            <h2>{titleLead}{titleRest.length > 0 && <><br /><em>{titleRest.join(' ')}</em></>}</h2>
             <div className="about-squares" aria-hidden="true"><span /><span /></div>
           </div>
 
           <div className="about-story-grid">
-            <div className="about-founder-visual" data-clip>
-              <img src="assets/images/founder.png" alt="Govind Budhwant, founder of Unseen Studios" />
-              <button type="button" className="about-play" aria-label="Play our studio story"><span>Creative digital agency · Unseen Studios · </span><Play /></button>
+            <div className="about-story-lead" data-reveal>
+              <span>{content.subtitle}</span>
+              <p className="about-preserve-lines">{content.secondaryTitle}</p>
             </div>
 
             <div className="about-story-copy" data-reveal>
-              <p>Unseen Studios is an independent creative and digital agency built around a simple belief: meaningful work begins with understanding. We get close to the problem, uncover the real opportunity and shape ideas that connect.</p>
-              <p>From films and identities to websites and growth campaigns, our team brings strategy, creativity and technology together under one roof.</p>
-              <div className="about-stat-row">
-                <div><strong>99%</strong><span>Projects delivered<br />with satisfaction</span></div>
-                <div><strong>436+</strong><span>Creative projects<br />completed</span></div>
-              </div>
+              <p>{content.body}</p>
+              <p>{content.bodyTwo}</p>
+            </div>
+          </div>
+
+          <div className="about-proof" data-reveal>
+            <div className="about-stat-row">
+              <div><strong>99%</strong><span>Client satisfaction</span></div>
+              <div><strong>436+</strong><span>Projects completed</span></div>
+              <div><strong>11+</strong><span>Creative disciplines</span></div>
+            </div>
+            <div className="about-disciplines" aria-label="Our disciplines">
+              {disciplines.map((discipline) => <span key={discipline}>{discipline}</span>)}
             </div>
           </div>
 
@@ -42,7 +57,7 @@ export default function AboutPage() {
       <section className="about-manifesto">
         <div className="about-shell about-manifesto-grid">
           <div data-reveal><p className="about-kicker is-dark">Our point of view</p><h2>Good work gets seen.<br /><em>Great work gets felt.</em></h2></div>
-          <div className="about-manifesto-image" data-clip><img src="assets/images/meeting.png" alt="The Unseen Studios team in a creative meeting" /></div>
+          <div className="about-manifesto-image" data-clip><img src={onlineImages.collaboration} alt="Creative professionals collaborating around a table" /></div>
           <div className="about-manifesto-copy" data-reveal><p>We are a deliberately close team of filmmakers, designers, strategists and developers. Different disciplines, one standard: make every detail earn its place.</p><Link to="/portfolio">Explore our work <ArrowRight /></Link></div>
         </div>
       </section>
@@ -54,8 +69,25 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <EditablePageSections sections={content.sections} />
+
+      <section className="about-founder">
+        <div className="about-shell about-founder-grid">
+          <div className="about-founder-image" data-clip>
+            <img src="assets/images/founder.png" alt="Govind Budhwant, founder of Unseen Studios" />
+          </div>
+          <div data-reveal>
+            <p className="about-kicker">Founder’s note</p>
+            <h2>Stay curious.<br /><em>Make it matter.</em></h2>
+            <p>Unseen Studios was founded to give ambitious ideas the care they deserve. We bring the right people around the table, ask better questions and stay close to the work from the first thought to the final frame.</p>
+            <blockquote>“Our job is not simply to make brands visible. It is to make them worth remembering.”</blockquote>
+            <div className="about-founder-signoff"><strong>Govind Budhwant</strong><span>Founder, Unseen Studios</span></div>
+          </div>
+        </div>
+      </section>
+
       <section className="about-next">
-        <div className="about-shell" data-reveal><p>Have a project in mind?</p><h2>Let’s make it<br /><em>unmissable.</em></h2><Link to="/contact">Start a conversation <ArrowUpRight /></Link></div>
+        <div className="about-shell" data-reveal><p>Have a project in mind?</p><h2>Let’s make it<br /><em>unmissable.</em></h2><Link to={content.buttonUrl || '/contact'}>{content.buttonLabel || 'Start a conversation'} <ArrowUpRight /></Link></div>
       </section>
     </div>
   )

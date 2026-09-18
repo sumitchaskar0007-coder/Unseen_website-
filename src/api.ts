@@ -1,16 +1,13 @@
 import axios from 'axios';
 
-// Use environment variable or fallback to localhost
-export const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+// Use the configured API or the Vite/production same-origin API route.
+export const API_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 export const API_ORIGIN = new URL(API_URL, window.location.origin).origin;
 
 export const getApiAssetUrl = (path: string) =>
-  path.startsWith('http://') || path.startsWith('https://')
+  path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:') || path.startsWith('blob:')
     ? path
     : `${API_ORIGIN}${path.startsWith('/') ? path : `/${path}`}`;
-
-// 👇 Add this line
-console.log("API URL:", API_URL);
 
 const api = axios.create({
   baseURL: API_URL,
@@ -33,7 +30,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error.response?.data || error.message);
-    if (error.response?.status === 401) {
+    const isLoginRequest = String(error.config?.url || '').endsWith('/admin/login');
+    if (error.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem('adminToken');
       window.location.href = '/admin/login';
     }

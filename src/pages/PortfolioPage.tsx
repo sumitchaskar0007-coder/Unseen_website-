@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt, FaFilter } from 'react-icons/fa';
 import { getApiAssetUrl, projectAPI } from '../api';
+import { cmsService } from '../services/cmsService';
 
 interface Project {
   _id: string;
@@ -44,13 +45,28 @@ const PortfolioPage = () => {
   }, [selectedCategory, projects]);
 
   const fetchProjects = async () => {
+    const localProjects: Project[] = cmsService.published('projects').map((item) => ({
+      _id: item.id,
+      title: String(item.name || 'Untitled project'),
+      description: String(item.shortDescription || item.description || ''),
+      category: String(item.category || 'creative').toLowerCase(),
+      image: String(item.image || ''),
+      link: String(item.url || ''),
+      technologies: String(item.services || '').split(',').map((value) => value.trim()).filter(Boolean),
+      featured: Boolean(item.featured),
+      createdAt: String(item.year || new Date().toISOString()),
+    }));
     try {
       setLoading(true);
       const response = await projectAPI.getAll();
-      setProjects(response.data.data || []);
-      setFilteredProjects(response.data.data || []);
+      const apiProjects = response.data.data || [];
+      const combined = [...localProjects, ...apiProjects.filter((project: Project) => !localProjects.some((local) => local._id === project._id))];
+      setProjects(combined);
+      setFilteredProjects(combined);
     } catch (error) {
       console.error('Error fetching projects:', error);
+      setProjects(localProjects);
+      setFilteredProjects(localProjects);
     } finally {
       setLoading(false);
     }

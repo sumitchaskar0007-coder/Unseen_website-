@@ -14,16 +14,25 @@ export function SiteLayout() {
   const location = useLocation()
   const mainRef = useRef<HTMLElement>(null)
   const introRef = useRef<HTMLDivElement>(null)
+  const lenisRef = useRef<Lenis | null>(null)
   const [showIntro, setShowIntro] = useState(() => sessionStorage.getItem('unseen-site-intro') !== '1')
+  const ownsHero = location.pathname === '/about' || location.pathname === '/blog' || location.pathname.startsWith('/blog/')
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const lenis = new Lenis({ duration: 1.1, smoothWheel: true, wheelMultiplier: .9 })
+    lenisRef.current = lenis
     lenis.on('scroll', ScrollTrigger.update)
     const tick = (time: number) => lenis.raf(time * 1000)
     gsap.ticker.add(tick)
     gsap.ticker.lagSmoothing(0)
-    return () => { gsap.ticker.remove(tick); lenis.destroy() }
+    return () => { gsap.ticker.remove(tick); lenis.destroy(); lenisRef.current = null }
+  }, [])
+
+  useEffect(() => {
+    const previous = window.history.scrollRestoration
+    window.history.scrollRestoration = 'manual'
+    return () => { window.history.scrollRestoration = previous }
   }, [])
 
   useLayoutEffect(() => {
@@ -39,9 +48,18 @@ export function SiteLayout() {
     return () => { timeline.kill() }
   }, [showIntro])
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [location.pathname])
+  useLayoutEffect(() => {
+    const scrollToTop = () => {
+      lenisRef.current?.scrollTo(0, { immediate: true, force: true })
+      window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+    }
+
+    scrollToTop()
+    const frame = window.requestAnimationFrame(scrollToTop)
+    return () => window.cancelAnimationFrame(frame)
+  }, [location.key])
 
   useLayoutEffect(() => {
     if (!mainRef.current || location.pathname === '/' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -89,7 +107,7 @@ export function SiteLayout() {
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className={`min-h-[calc(100svh-5.5rem)] ${location.pathname === '/' ? 'site-home-page' : 'site-inner-page'}`}
         >
-          {location.pathname !== '/' && <InnerPageHero />}
+          {location.pathname !== '/' && !ownsHero && <InnerPageHero />}
           <Outlet />
         </motion.main>
       </AnimatePresence>

@@ -1,123 +1,71 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { adminAPI } from '../../api';
-import toast from 'react-hot-toast';
-import { FaEnvelope, FaLock, FaSignInAlt } from 'react-icons/fa';
+import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { adminAPI } from '../../api'
+import './admin-cms.css'
 
-const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
+export default function AdminLogin() {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('info@unseen.com')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  if (localStorage.getItem('adminToken')) return <Navigate to="/admin" replace />
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault()
+    setError('')
+    setLoading(true)
     try {
-      const response = await adminAPI.login(email, password);
-      localStorage.setItem('adminToken', response.data.token);
-      toast.success('Login successful! Redirecting to dashboard...');
-      setTimeout(() => {
-        navigate('/admin/dashboard');
-      }, 1000);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
+      const response = await adminAPI.login(email.trim(), password)
+      if (!response.data?.token) throw new Error('The server did not create a session.')
+      localStorage.setItem('adminToken', response.data.token)
+      localStorage.setItem('adminEmail', response.data.email || email.trim())
+      navigate('/admin', { replace: true })
+    } catch (requestError: unknown) {
+      const error = requestError as { response?: { status?: number; data?: { message?: string } }; code?: string }
+      if (!error.response) {
+        setError('Cannot reach the dashboard server. Start the app with “npm run dev” and try again.')
+      } else if (error.response.status === 401) {
+        setError('The email or password is incorrect.')
+      } else if (error.response.status === 503) {
+        setError('The dashboard database is temporarily unavailable.')
+      } else {
+        setError(error.response.data?.message || 'Unable to open the dashboard. Please try again.')
+      }
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-  
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl fade-in">
-        <div>
-          <div className="flex justify-center">
-            <div className="h-20 w-20 bg-blue-500 rounded-full flex items-center justify-center">
-              <FaSignInAlt className="text-white text-3xl" />
-            </div>
+    <main className="cms-login">
+      <div className="cms-login-art" aria-hidden="true"><span>UNSEEN</span><small>Content studio</small></div>
+      <section className="cms-login-card" aria-labelledby="admin-login-title">
+        <div className="cms-login-mark"><strong>UNSEEN</strong><span>STUDIOS</span></div>
+        <p className="cms-kicker">Private workspace</p>
+        <h1 id="admin-login-title">Content<br />management.</h1>
+        <p className="cms-login-copy">Sign in with the authorised admin email and password to manage website content.</p>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="admin-email">Email address</label>
+          <div className="cms-password-field">
+            <Mail aria-hidden="true" />
+            <input id="admin-email" type="email" value={email} onChange={(event) => { setEmail(event.target.value); setError('') }} autoComplete="username" required />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Admin Login
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your credentials to access the dashboard
-          </p>
-        </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="admin@school.com"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
+          <label htmlFor="admin-password">Password</label>
+          <div className="cms-password-field">
+            <LockKeyhole aria-hidden="true" />
+            <input id="admin-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => { setPassword(event.target.value); setError('') }} autoComplete="current-password" required />
+            <button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff /> : <Eye />}</button>
           </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Logging in...
-                </div>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </div>
-
-          <div className="text-center text-sm text-gray-600">
-            <p>Demo Credentials:</p>
-            <p className="font-mono text-xs">Email: admin@school.com</p>
-            <p className="font-mono text-xs">Password: admin123</p>
-          </div>
+          {error && <p className="cms-form-error" role="alert">{error}</p>}
+          <button className="cms-primary-button" type="submit" disabled={loading}>{loading?'Signing in…':'Open dashboard'} <span>↗</span></button>
         </form>
-      </div>
-    </div>
-  );
-};
-
-export default AdminLogin;
+        <small>Authorised administrators only</small>
+      </section>
+    </main>
+  )
+}

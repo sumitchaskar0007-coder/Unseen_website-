@@ -1,62 +1,109 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { galleryAPI } from '../api';
 import { FaSearch } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { cmsService } from '../services/cmsService';
+import { onlineImages } from '../data/onlineImages';
 
 interface GalleryItem {
   _id: string;
   title: string;
   description: string;
   imageUrl: string;
+  videoUrl?: string;
+  mediaType?: string;
   category: string;
   createdAt: string;
 }
 
+const editorialGallery: GalleryItem[] = [
+  { _id: 'editorial-film-set', title: 'On the film set', description: 'Professional camera craft and production detail.', imageUrl: onlineImages.filmSet, category: 'production', mediaType: 'image', createdAt: '2026-01-01' },
+  { _id: 'editorial-camera', title: 'Framing the story', description: 'A cinematographer preparing the next shot.', imageUrl: onlineImages.cameraOperator, category: 'production', mediaType: 'image', createdAt: '2026-01-02' },
+  { _id: 'editorial-podcast', title: 'In the recording room', description: 'A focused space for podcasts, interviews and sound.', imageUrl: onlineImages.podcastStudio, category: 'studio', mediaType: 'image', createdAt: '2026-01-03' },
+  { _id: 'editorial-team', title: 'Ideas in progress', description: 'A creative team shaping strategy together.', imageUrl: onlineImages.collaboration, category: 'people', mediaType: 'image', createdAt: '2026-01-04' },
+  { _id: 'editorial-office', title: 'The creative workspace', description: 'A modern environment designed for focused work.', imageUrl: onlineImages.creativeOffice, category: 'studio', mediaType: 'image', createdAt: '2026-01-05' },
+  { _id: 'editorial-development', title: 'Building digital experiences', description: 'Design and development coming together on screen.', imageUrl: onlineImages.developerWorkspace, category: 'digital', mediaType: 'image', createdAt: '2026-01-06' },
+  { _id: 'editorial-analytics', title: 'Reading the signals', description: 'Performance data translated into clear decisions.', imageUrl: onlineImages.analyticsDashboard, category: 'strategy', mediaType: 'image', createdAt: '2026-01-07' },
+  { _id: 'editorial-hospitality', title: 'Hospitality, thoughtfully framed', description: 'Atmosphere and detail captured for a hospitality story.', imageUrl: onlineImages.hospitality, category: 'campaigns', mediaType: 'image', createdAt: '2026-01-08' },
+  { _id: 'editorial-social', title: 'Social in motion', description: 'Digital channels built for attention and connection.', imageUrl: onlineImages.socialMedia, category: 'digital', mediaType: 'image', createdAt: '2026-01-09' },
+];
+
+const youtubeEmbed = (url: string) => {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&/]+)/i);
+  return match ? `https://www.youtube.com/embed/${match[1]}` : '';
+};
+
+const instagramEmbed = (url: string) => {
+  const match = url.match(/instagram\.com\/(p|reel|reels)\/([^?/#]+)/i);
+  return match ? `https://www.instagram.com/${match[1]}/${match[2]}/embed` : url;
+};
+
+const GalleryMedia = ({ item, modal = false }: { item: GalleryItem; modal?: boolean }) => {
+  const className = modal ? 'w-full max-h-[75vh] rounded-lg bg-black object-contain' : 'w-full h-64 object-cover transition group-hover:scale-110';
+  if (item.mediaType === 'youtube') {
+    return <iframe src={youtubeEmbed(item.videoUrl || '')} title={item.title} className={className} allowFullScreen loading="lazy" />;
+  }
+  if (item.mediaType === 'instagram') {
+    return <iframe src={instagramEmbed(item.videoUrl || '')} title={item.title} className={className} allowFullScreen loading="lazy" />;
+  }
+  if (item.mediaType === 'video') {
+    return <video src={item.videoUrl} className={className} controls={modal} muted={!modal} preload="metadata" />;
+  }
+  return <img src={item.imageUrl} alt={item.title} className={className} />;
+};
+
 const Gallery = () => {
   const [items, setItems] = useState<GalleryItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
 
-  const categories = ['all', 'events', 'cultural', 'general'];
+  const categories = ['all', ...Array.from(new Set(items.map((item) => item.category || 'general')))];
+  const filteredItems = useMemo(() => items.filter((item) => {
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const query = searchTerm.toLowerCase();
+    const matchesSearch = !query || item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query);
+    return matchesCategory && matchesSearch;
+  }), [items, selectedCategory, searchTerm]);
 
   useEffect(() => {
     fetchGallery();
   }, []);
 
-  useEffect(() => {
-    filterItems();
-  }, [selectedCategory, searchTerm, items]);
-
   const fetchGallery = async () => {
+    const mediaItems: GalleryItem[] = cmsService.published('media').map((item) => ({
+      _id: item.id,
+      title: String(item.name || 'Studio image').replace(/\.[^.]+$/, ''),
+      description: String(item.description || 'A moment from Unseen Studios.'),
+      imageUrl: String(item.image || ''),
+      videoUrl: String(item.videoUrl || ''),
+      mediaType: String(item.mediaType || 'image'),
+      category: String(item.category || 'general').toLowerCase(),
+      createdAt: new Date().toISOString(),
+    }));
+    const projectImages: GalleryItem[] = cmsService.published('projects').flatMap((project) => {
+      const images = Array.isArray(project.gallery) ? project.gallery : [];
+      return images.map((image, index) => ({
+        _id: `${project.id}-gallery-${index}`,
+        title: String(project.name || 'Project gallery'),
+        description: String(project.shortDescription || project.description || 'Project image'),
+        imageUrl: image,
+        mediaType: 'image',
+        category: String(project.category || 'projects').toLowerCase(),
+        createdAt: new Date().toISOString(),
+      }));
+    });
+    const localItems = [...mediaItems, ...projectImages];
     try {
       const response = await galleryAPI.getAll();
-      setItems(response.data);
-      setFilteredItems(response.data);
+      const apiItems: GalleryItem[] = response.data || [];
+      const combined = [...localItems, ...apiItems.filter((item) => !localItems.some((local) => local._id === item._id)), ...editorialGallery];
+      setItems(combined);
     } catch (error) {
-      toast.error('Failed to load gallery');
+      setItems([...localItems, ...editorialGallery]);
     } finally {
       setLoading(false);
     }
-  };
-
-  const filterItems = () => {
-    let filtered = items;
-    
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(item => item.category === selectedCategory);
-    }
-    
-    if (searchTerm) {
-      filtered = filtered.filter(item => 
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    setFilteredItems(filtered);
   };
 
   return (
@@ -105,7 +152,7 @@ const Gallery = () => {
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No images found</p>
+            <p className="text-gray-500 text-lg">No media found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -115,11 +162,7 @@ const Gallery = () => {
                 className="group relative overflow-hidden rounded-lg shadow-md cursor-pointer transform transition hover:scale-105"
                 onClick={() => setSelectedImage(item)}
               >
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-64 object-cover transition group-hover:scale-110"
-                />
+                <GalleryMedia item={item} />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <div className="text-center text-white p-4">
                     <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
@@ -147,11 +190,7 @@ const Gallery = () => {
               >
                 ×
               </button>
-              <img
-                src={selectedImage.imageUrl}
-                alt={selectedImage.title}
-                className="w-full h-auto rounded-lg"
-              />
+              <GalleryMedia item={selectedImage} modal />
               <div className="bg-white p-4 rounded-b-lg mt-2">
                 <h3 className="text-xl font-semibold mb-2">{selectedImage.title}</h3>
                 <p className="text-gray-600">{selectedImage.description}</p>

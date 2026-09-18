@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { onlineImages } from '../data/onlineImages';
 
 import {
   TrendingUp,
@@ -142,12 +143,9 @@ const DigitalPage = () => {
             <div className="relative">
               <div className="relative rounded-2xl shadow-2xl overflow-hidden border-4 border-white">
                 <img 
-                  src="assets/images/digital.png"
-                  alt="Digital Marketing Dashboard" 
+                  src={onlineImages.analytics}
+                  alt="Marketing team reviewing digital analytics"
                   className="w-full h-auto"
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop';
-                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/10 to-transparent"></div>
               </div>
@@ -254,12 +252,9 @@ const DigitalPage = () => {
             </div>
             <div>
               <img 
-                src="assets/images/digital1.png"
-                alt="Digital Marketing Analytics" 
+                src={onlineImages.analyticsDashboard}
+                alt="Digital analytics dashboard on a laptop"
                 className="rounded-2xl shadow-2xl border-4 border-white"
-                onError={(e) => {
-                  e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop';
-                }}
               />
             </div>
           </div>

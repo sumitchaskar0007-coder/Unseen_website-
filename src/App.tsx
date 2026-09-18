@@ -1,5 +1,5 @@
 // frontend/src/App.tsx
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { CursorGlow } from './components/CursorGlow'
 import { SiteLayout } from './layouts/SiteLayout'
 import AboutPage from './pages/AboutPage'
@@ -12,11 +12,7 @@ import WhyUnseen from './pages/WhyUnseen'
 import Podcast from './pages/Podcast'
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLogin from './pages/admin/AdminLogin';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import GalleryAdmin from './pages/admin/GalleryAdmin';
-import CareerAdmin from './pages/admin/CareerAdmin';
-import BlogAdmin from './pages/admin/BlogAdmin';
-import ProjectAdmin from './pages/admin/ProjectAdmin';
+import { AdminHome, AdminLayout, ContentManager, HomepageManager, MediaManager, PageContentManager, SettingsManager } from './pages/admin/CMSAdmin';
 import Gallery from './pages/Gallery';
 import Careers from './pages/Careers';
 import Blog from './pages/Blog';
@@ -184,11 +180,46 @@ export default function App() {
           
           {/* Protected Admin Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/gallery" element={<GalleryAdmin />} />
-            <Route path="/admin/careers" element={<CareerAdmin />} />
-            <Route path="/admin/blogs" element={<BlogAdmin />} />
-            <Route path="/admin/projects" element={<ProjectAdmin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminHome />} />
+              <Route path="dashboard" element={<Navigate to="/admin" replace />} />
+
+              <Route path="projects" element={<ContentManager module="projects" />} />
+              <Route path="projects/new" element={<ContentManager module="projects" />} />
+              <Route path="projects/:id/edit" element={<ContentManager module="projects" />} />
+
+              <Route path="clients" element={<ContentManager module="clients" />} />
+              <Route path="clients/new" element={<ContentManager module="clients" />} />
+              <Route path="clients/:id/edit" element={<ContentManager module="clients" />} />
+
+              <Route path="blogs" element={<ContentManager module="blogs" />} />
+              <Route path="blogs/new" element={<ContentManager module="blogs" />} />
+              <Route path="blogs/:id/edit" element={<ContentManager module="blogs" />} />
+
+              <Route path="testimonials" element={<ContentManager module="testimonials" />} />
+              <Route path="testimonials/new" element={<ContentManager module="testimonials" />} />
+              <Route path="testimonials/:id/edit" element={<ContentManager module="testimonials" />} />
+
+              <Route path="hiring" element={<ContentManager module="hiring" />} />
+              <Route path="hiring/new" element={<ContentManager module="hiring" />} />
+              <Route path="hiring/:id/edit" element={<ContentManager module="hiring" />} />
+
+              <Route path="services" element={<ContentManager module="services" />} />
+              <Route path="services/new" element={<ContentManager module="services" />} />
+              <Route path="services/:id/edit" element={<ContentManager module="services" />} />
+
+              <Route path="team" element={<ContentManager module="team" />} />
+              <Route path="team/new" element={<ContentManager module="team" />} />
+              <Route path="team/:id/edit" element={<ContentManager module="team" />} />
+
+              <Route path="media" element={<MediaManager />} />
+              <Route path="homepage" element={<HomepageManager />} />
+              <Route path="pages/:page" element={<PageContentManager />} />
+              <Route path="settings" element={<SettingsManager />} />
+
+              <Route path="gallery" element={<Navigate to="/admin/media" replace />} />
+              <Route path="careers" element={<Navigate to="/admin/hiring" replace />} />
+            </Route>
           </Route>
         </Routes>
       </div>

@@ -6,19 +6,8 @@ import { IconInstagram, IconLinkedin, IconYoutube } from '../components/icons/So
 import { MagneticButton } from '../components/MagneticButton'
 import { Reveal } from '../components/Reveal'
 import { SectionHeading } from '../components/SectionHeading'
-
-const services = [
-  'Documentary Films',
-  'Podcast & Jingles',
-  'Video Ads',
-  'Social Media Marketing',
-  'Website Development',
-  'Digital Marketing',
-  'SEO Optimization',
-  'Political Campaigns',
-  'Bulk SMS Marketing',
-  'Other / Not sure',
-]
+import { EditablePageSections } from '../components/EditablePageSections'
+import { usePageContent } from '../data/pageContent'
 
 const fieldClass =
   'rounded-2xl border border-black/10 bg-white px-4 py-3.5 text-[15px] text-black outline-none transition-[border-color,box-shadow] placeholder:text-black/25 focus:border-orange-500/40 focus:ring-2 focus:ring-orange-500/20'
@@ -44,6 +33,8 @@ function buildInquiryMessage(fd: FormData) {
 }
 
 export function ContactPage() {
+  const content = usePageContent('contact')
+  const services = content.services.split('\n').map((service) => service.trim()).filter(Boolean)
   const [status, setStatus] = useState<'idle' | 'sent' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
   const waDigits = getWhatsAppDigits()
@@ -81,9 +72,9 @@ export function ContactPage() {
       <div className="relative mx-auto max-w-7xl px-5 md:px-8">
         <div className="contact-page-heading max-w-3xl">
           <SectionHeading
-            eyebrow="Contact"
-            title="Start a conversation — we'll reply where you already work."
-            subtitle="Send the brief through the form. It opens WhatsApp with your details prefilled so we can respond fast."
+            eyebrow={content.eyebrow}
+            title={content.title}
+            subtitle={content.subtitle}
           />
           <style>{`
             .contact-page-heading h2,
@@ -167,7 +158,7 @@ export function ContactPage() {
                 </div>
                 <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.568220122809!2d73.8029950737989!3d18.457903571088238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc295500abb3d75%3A0x7ec192ce5faba3be!2sUnseen%20studio%2FTrijja%20Media%20Works!5e0!3m2!1sen!2sin!4v1784527998439!5m2!1sen!2sin"
+                    src={content.mapEmbedUrl}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -257,7 +248,7 @@ export function ContactPage() {
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 py-4 text-sm font-semibold text-white shadow-[0_0_45px_rgba(255,165,0,0.22)] transition-transform hover:scale-[1.01] hover:shadow-[0_0_60px_rgba(255,165,0,0.35)] sm:w-auto sm:min-w-[220px] sm:px-10"
                   >
                     <Send className="h-4 w-4" aria-hidden />
-                    {status === 'sent' ? 'Sent — check WhatsApp' : 'Send via WhatsApp'}
+                    {status === 'sent' ? 'Sent — check WhatsApp' : content.buttonLabel}
                   </button>
                 </MagneticButton>
 
@@ -270,6 +261,7 @@ export function ContactPage() {
             </motion.form>
           </Reveal>
         </div>
+        <EditablePageSections sections={content.sections} />
       </div>
     </section>
   )

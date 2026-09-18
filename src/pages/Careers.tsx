@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { careerAPI } from '../api';
 import { FaBriefcase, FaMapMarkerAlt, FaClock, FaDollarSign, FaFilter, FaChevronRight } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { cmsService } from '../services/cmsService';
 
 interface CareerItem {
   _id: string;
@@ -38,6 +39,19 @@ const Careers = () => {
   useEffect(() => { filterCareers(); }, [selectedType, careers]);
 
   const fetchCareers = async () => {
+    const normaliseType = (value: string) => value === 'Full Time' ? 'Full-time' : value === 'Part Time' ? 'Part-time' : value;
+    const localCareers: CareerItem[] = cmsService.published('hiring').map((item) => ({
+      _id: item.id,
+      title: String(item.name || 'Open position'),
+      department: String(item.department || 'Creative'),
+      location: String(item.location || 'Pune'),
+      type: normaliseType(String(item.jobType || 'Full-time')),
+      description: String(item.description || item.shortDescription || ''),
+      requirements: String(item.requirements || item.skills || '').split(/\n|,/).map((value) => value.trim()).filter(Boolean),
+      salary: String(item.salary || ''),
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    }));
     try {
       setLoading(true);
       const response = await careerAPI.getAll();
@@ -51,13 +65,14 @@ const Careers = () => {
             ? career.requirements.split(',').map((r: string) => r.trim())
             : [],
         }));
-      setCareers(activeCareers);
-      setFilteredCareers(activeCareers);
-      if (activeCareers.length === 0) toast('No active job openings at the moment', { icon: 'ℹ️' });
+      const combined = [...localCareers, ...activeCareers.filter((career: CareerItem) => !localCareers.some((local) => local._id === career._id))];
+      setCareers(combined);
+      setFilteredCareers(combined);
+      if (combined.length === 0) toast('No active job openings at the moment', { icon: 'ℹ️' });
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to load careers');
-      setCareers([]);
-      setFilteredCareers([]);
+      if (!localCareers.length) toast.error(error.response?.data?.message || 'Failed to load careers');
+      setCareers(localCareers);
+      setFilteredCareers(localCareers);
     } finally {
       setLoading(false);
     }

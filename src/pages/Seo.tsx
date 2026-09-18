@@ -16,6 +16,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import './Seo.css';
+import { onlineImages } from '../data/onlineImages';
 
 const Seo: React.FC = () => {
   // SEO Services Data
@@ -96,8 +97,8 @@ const Seo: React.FC = () => {
         </div>
         <div className="hero-image">
           <img 
-            src="assets/images/seo1.png"
-            alt="SEO professionals analyzing data and search engine optimization strategies"
+            src={onlineImages.analytics}
+            alt="SEO professionals reviewing search performance data"
             className="seo-hero-image"
           />
           <div className="hero-stats-float">
@@ -236,8 +237,8 @@ const Seo: React.FC = () => {
       {/* Full Width Image Section */}
       <section className="seo-full-image">
         <img 
-          src="assets/images/seo2.png"
-          alt="SEO growth and business success visualization"
+          src={onlineImages.analyticsDashboard}
+          alt="Search and website performance analytics dashboard"
           className="full-width-image"
         />
       </section>

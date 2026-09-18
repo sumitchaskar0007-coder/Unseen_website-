@@ -1,187 +1,341 @@
 import { motion } from 'framer-motion'
+import { ArrowUpRight, Play, Sparkles } from 'lucide-react'
+import { onlineImages } from '../../data/onlineImages'
 
 export function About() {
   return (
-    <section className="relative overflow-hidden bg-[#f8f8fb] px-6 py-20 md:px-12 lg:px-20">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 lg:grid-cols-2">
+    <section
+      id="about"
+      className="relative overflow-hidden bg-[#f8f8fb] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-20 lg:py-32"
+    >
+      {/* BACKGROUND DETAILS */}
+      <div className="pointer-events-none absolute -right-40 top-20 h-[420px] w-[420px] rounded-full bg-[#ff8a00]/5 blur-3xl" />
 
-        {/* LEFT CONTENT */}
+      <div className="mx-auto max-w-[1400px]">
+
+        {/* =========================================
+            TOP INTRO
+        ========================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="max-w-[620px]"
+          transition={{ duration: 0.7 }}
+          className="mb-16 flex flex-col justify-between gap-8 md:mb-20 md:flex-row md:items-end"
         >
-          {/* TOP LABEL */}
-          <div className="mb-7 flex items-center gap-4">
-            <div className="h-[2px] w-14 bg-[#ff8a00]" />
+          <div>
+            <div className="mb-6 flex items-center gap-4">
+              <span className="h-[2px] w-12 bg-[#ff8a00]" />
 
-            <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#ff8a00]">
-              About Unseen Studio
-            </span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-[#ff8a00] sm:text-[11px]">
+                About Unseen Studio
+              </span>
+            </div>
+
+            <h2
+              className="max-w-[850px] text-[2.5rem] font-black leading-[0.95] tracking-[-0.055em] text-black sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem]"
+              style={{
+                fontFamily:
+                  'Inter, SF Pro Display, Helvetica Neue, sans-serif',
+              }}
+            >
+              We create things
+              <br />
+              people
+              <span
+                className="ml-2 font-serif italic text-[#ff8a00] sm:ml-4"
+                style={{
+                  fontFamily: 'Playfair Display, Georgia, serif',
+                }}
+              >
+                remember.
+              </span>
+            </h2>
           </div>
 
-          {/* HEADING */}
-         <h2
-  className="
-    max-w-2xl
-    font-black
-    tracking-[-0.05em]
-    text-black
-    leading-[1]
-    text-[1.9rem]
-    sm:text-[2.4rem]
-    md:text-[3rem]
-    lg:text-[3.5rem]
-  "
-  style={{
-    fontFamily:
-      'Inter, SF Pro Display, Helvetica Neue, sans-serif',
-  }}
->
-  A unseen studio
-  <br />
-  engineered for modern
-  <br />
-
-  <span
-    className="italic text-[#ff8a00]"
-    style={{
-      fontFamily:
-        'Playfair Display, serif',
-    }}
-  >
-    influence.
-  </span>
-</h2>
-
-          {/* DESCRIPTION */}
-          <p
-            className="
-              mt-8
-              max-w-xl
-              text-base
-              leading-[1.9]
-              text-black/60
-              md:text-lg
-            "
-            style={{
-              fontFamily:
-                'Inter, sans-serif',
-            }}
-          >
-            We blend cinematic craft with performance systems —
-            building brands, campaigns, and platforms that feel
-            inevitable in the feed and unforgettable on screen.
-          </p>
-
-          {/* SECOND TEXT */}
-          <div className="mt-10 border-l-[3px] border-[#ff8a00] pl-5">
-            <p
-              className="
-                max-w-xl
-                text-sm
-                leading-[2]
-                text-black/65
-                md:text-base
-              "
-            >
-              Founded at the intersection of storytelling and data,
-              Unseen Studio partners with ambitious brands to turn
-              scroll-stopping content into measurable growth.
+          <div className="max-w-[300px] md:pb-2">
+            <p className="text-sm leading-7 text-black/55 md:text-base">
+              A creative studio where cinematic storytelling,
+              technology and strategy come together to build
+              meaningful brands.
             </p>
           </div>
-
-          {/* FEATURE CARDS */}
-          <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-3">
-
-            {/* CARD 1 */}
-            <div className="group rounded-[1.8rem] border border-black/5 bg-white p-5 shadow-[0_10px_35px_rgba(0,0,0,0.05)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.10)]">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ff8a00]/10 text-2xl">
-                🎬
-              </div>
-
-              <h3 className="text-lg font-bold text-black">
-                Cinematic Craft
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-black/60">
-                Storytelling that connects emotionally.
-              </p>
-            </div>
-
-            {/* CARD 2 */}
-            <div className="group rounded-[1.8rem] border border-black/5 bg-white p-5 shadow-[0_10px_35px_rgba(0,0,0,0.05)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.10)]">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ff8a00]/10 text-2xl">
-                🎯
-              </div>
-
-              <h3 className="text-lg font-bold text-black">
-                Data Driven
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-black/60">
-                Performance-focused systems for growth.
-              </p>
-            </div>
-
-            {/* CARD 3 */}
-            <div className="group rounded-[1.8rem] border border-black/5 bg-white p-5 shadow-[0_10px_35px_rgba(0,0,0,0.05)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.10)]">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ff8a00]/10 text-2xl">
-                🚀
-              </div>
-
-              <h3 className="text-lg font-bold text-black">
-                End to End
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-black/60">
-                From concept to impactful execution.
-              </p>
-            </div>
-          </div>
         </motion.div>
 
-        {/* RIGHT IMAGE SECTION */}
+        {/* =========================================
+            MAIN EDITORIAL GRID
+        ========================================= */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10">
+
+          {/* =========================================
+              FOUNDER SIDE
+          ========================================= */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="relative"
+          >
+            {/* FOUNDER IMAGE */}
+            <div className="group relative overflow-hidden rounded-[2rem] bg-black sm:rounded-[2.8rem]">
+
+              <img
+                src="/assets/images/founder.png"
+                alt="Founder of Unseen Studio"
+                className="h-[520px] w-full object-cover object-center transition-transform duration-1000 group-hover:scale-[1.04] sm:h-[650px] lg:h-[720px]"
+              />
+
+              {/* IMAGE GRADIENT */}
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+              {/* SMALL LABEL */}
+              <div className="absolute left-5 top-5 sm:left-7 sm:top-7">
+                <div className="flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-4 py-2 backdrop-blur-md">
+                  <Sparkles
+                    size={13}
+                    className="text-[#ff8a00]"
+                  />
+
+                  <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white">
+                    The Founder
+                  </span>
+                </div>
+              </div>
+
+              {/* FOUNDER TEXT ON IMAGE */}
+              <div className="absolute bottom-6 left-5 right-5 sm:bottom-8 sm:left-8 sm:right-8">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#ff8a00]">
+                  Founder & Creative Director
+                </p>
+
+                <h3 className="text-3xl font-black tracking-[-0.04em] text-white sm:text-4xl md:text-5xl">
+                  Your Founder Name
+                </h3>
+              </div>
+            </div>
+
+            {/* FOUNDER SLOGAN */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.3 }}
+              className="relative -mt-10 ml-5 mr-5 rounded-[1.7rem] bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.10)] sm:-mt-14 sm:ml-10 sm:mr-10 sm:p-8"
+            >
+              <div className="mb-5 flex items-center justify-between">
+                <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-black/40">
+                  Founder’s Note
+                </span>
+
+                <div className="h-2 w-2 rounded-full bg-[#ff8a00]" />
+              </div>
+
+              <p
+                className="max-w-[650px] text-[1.5rem] font-medium leading-[1.2] tracking-[-0.035em] text-black sm:text-[2rem] md:text-[2.25rem]"
+                style={{
+                  fontFamily:
+                    'Inter, SF Pro Display, Helvetica Neue, sans-serif',
+                }}
+              >
+                “Great work isn't just seen.
+                <span className="text-[#ff8a00]">
+                  {' '}
+                  It stays with you.
+                </span>
+                ”
+              </p>
+
+              <div className="mt-6 flex items-center justify-between border-t border-black/10 pt-5">
+                <span className="text-xs text-black/45">
+                  Building ideas into experiences.
+                </span>
+
+                <ArrowUpRight
+                  size={18}
+                  className="text-[#ff8a00]"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* =========================================
+              RIGHT CREATIVE SIDE
+          ========================================= */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+            className="flex flex-col"
+          >
+
+            {/* SECOND IMAGE */}
+            <div className="group relative overflow-hidden rounded-[2rem] bg-black sm:rounded-[2.8rem]">
+              <img
+                src={onlineImages.creativeOffice}
+                alt="A bright creative studio workspace"
+                className="h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-[1.04] sm:h-[500px] lg:h-[540px]"
+              />
+
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+
+              {/* PLAY STYLE BUTTON */}
+              <div className="absolute right-5 top-5 sm:right-7 sm:top-7">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                  <Play
+                    size={15}
+                    fill="black"
+                    className="ml-0.5 text-black"
+                  />
+                </div>
+              </div>
+
+              {/* IMAGE TEXT */}
+              <div className="absolute bottom-6 left-5 right-5 sm:bottom-8 sm:left-8">
+                <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.3em] text-[#ff8a00]">
+                  Behind The Scenes
+                </p>
+
+                <h3 className="max-w-[450px] text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl">
+                  Where ideas become visual stories.
+                </h3>
+              </div>
+            </div>
+
+            {/* =========================================
+                PHILOSOPHY BLOCK
+            ========================================= */}
+            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+              {/* BLACK QUOTE */}
+              <motion.div
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-[1.8rem] bg-black p-7 sm:p-8"
+              >
+                <div className="mb-12 flex items-center justify-between">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/40">
+                    Our Philosophy
+                  </span>
+
+                  <span className="text-[#ff8a00]">✦</span>
+                </div>
+
+                <h3
+                  className="text-2xl font-medium leading-[1.15] tracking-[-0.04em] text-white sm:text-3xl"
+                  style={{
+                    fontFamily:
+                      'Inter, SF Pro Display, Helvetica Neue, sans-serif',
+                  }}
+                >
+                  Think
+                  <br />
+                  <span className="font-serif italic text-[#ff8a00]">
+                    different.
+                  </span>
+                  <br />
+                  Make
+                  <br />
+                  impact.
+                </h3>
+              </motion.div>
+
+              {/* APPROACH */}
+              <motion.div
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-[1.8rem] border border-black/5 bg-[#ff8a00] p-7 sm:p-8"
+              >
+                <div className="mb-12 flex items-center justify-between">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-black/50">
+                    Our Approach
+                  </span>
+
+                  <ArrowUpRight
+                    size={18}
+                    className="text-black"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold">
+                      01
+                    </span>
+
+                    <span className="text-lg font-bold">
+                      Create
+                    </span>
+                  </div>
+
+                  <div className="h-px bg-black/15" />
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold">
+                      02
+                    </span>
+
+                    <span className="text-lg font-bold">
+                      Connect
+                    </span>
+                  </div>
+
+                  <div className="h-px bg-black/15" />
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold">
+                      03
+                    </span>
+
+                    <span className="text-lg font-bold">
+                      Impact
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* =========================================
+            BOTTOM STATEMENT
+        ========================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="grid grid-cols-2 gap-5"
+          transition={{ duration: 0.7 }}
+          className="mt-16 border-t border-black/10 pt-10 sm:mt-20 sm:pt-12"
         >
-          {/* LARGE IMAGE */}
-          <div className="overflow-hidden rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.12)]">
-            <img
-              src="assets/images/a33.png"
-              alt="Camera Studio"
-              className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-            />
-          </div>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto] md:items-end">
 
-          {/* RIGHT SIDE */}
-          <div className="flex flex-col gap-5">
+            <div>
+              <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.3em] text-[#ff8a00]">
+                Why Unseen
+              </p>
 
-            {/* TOP IMAGE */}
-            <div className="overflow-hidden rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.08)]">
-              <img
-                src="assets/images/a2.png"
-                alt="Creative Workspace"
-                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-              />
+              <h3
+                className="max-w-[850px] text-2xl font-bold leading-[1.15] tracking-[-0.04em] text-black sm:text-3xl md:text-4xl"
+              >
+                We don't just make content.
+                <br />
+                We build{' '}
+                <span className="font-serif italic text-[#ff8a00]">
+                  presence.
+                </span>
+              </h3>
             </div>
 
-            {/* BOTTOM IMAGE */}
-            <div className="overflow-hidden rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.08)]">
-              <img
-                src="assets/images/a1.png"
-                alt="Studio Editing"
-                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-              />
+            <div className="flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-[#ff8a00]" />
+
+              <span className="text-xs font-medium text-black/45">
+                Creative · Strategy · Technology
+              </span>
             </div>
+
           </div>
         </motion.div>
+
       </div>
     </section>
   )

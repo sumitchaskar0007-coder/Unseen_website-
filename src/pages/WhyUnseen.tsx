@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { motion } from "framer-motion";
+import { onlineImages } from '../data/onlineImages';
 import {
   FaFilm,
   FaPodcast,
@@ -150,8 +151,8 @@ const Whyunseen = () => {
     
     {/* Main Image */}
     <img
-      src="assets/images/podcast.png"
-      alt="Creative Studio"
+      src={onlineImages.podcastStudio}
+      alt="Professional podcast microphones in a recording studio"
       className="h-[550px] w-full object-cover transition-transform duration-700 hover:scale-105"
     />
 
@@ -247,8 +248,8 @@ const Whyunseen = () => {
             <div className="absolute -inset-5 bg-orange-100 rounded-[40px] blur-3xl opacity-60"></div>
 
             <img
-              src="assets/images/meeting.png"
-              alt="team"
+              src={onlineImages.collaboration}
+              alt="Creative team collaborating in a strategy meeting"
               className="relative rounded-[40px] shadow-2xl"
             />
           </motion.div>

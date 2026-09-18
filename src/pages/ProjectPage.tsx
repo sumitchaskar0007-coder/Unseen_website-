@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaArrowLeft, FaExternalLinkAlt, FaTag, FaCalendar } from 'react-icons/fa';
 import { getApiAssetUrl, projectAPI } from '../api';
+import { cmsService } from '../services/cmsService';
 
 interface Project {
   _id: string;
@@ -13,6 +14,7 @@ interface Project {
   technologies: string[];
   featured: boolean;
   createdAt: string;
+  gallery?: string[];
 }
 
 const ProjectPage = () => {
@@ -30,6 +32,22 @@ const ProjectPage = () => {
   const fetchProject = async (projectId: string) => {
     try {
       setLoading(true);
+      const local = cmsService.published('projects').find((item) => item.id === projectId);
+      if (local) {
+        setProject({
+          _id: local.id,
+          title: String(local.name || 'Untitled project'),
+          description: String(local.description || local.shortDescription || ''),
+          category: String(local.category || 'Creative'),
+          image: String(local.image || ''),
+          link: String(local.url || ''),
+          technologies: String(local.services || '').split(',').map((value) => value.trim()).filter(Boolean),
+          featured: Boolean(local.featured),
+          createdAt: String(local.year || new Date().toISOString()),
+          gallery: Array.isArray(local.gallery) ? local.gallery : [],
+        });
+        return;
+      }
       const response = await projectAPI.getById(projectId);
       setProject(response.data.data);
     } catch (err: any) {
@@ -113,6 +131,14 @@ const ProjectPage = () => {
             <div className="prose max-w-none mb-6">
               <p className="text-gray-700 text-lg leading-relaxed">{project.description}</p>
             </div>
+
+            {project.gallery && project.gallery.length > 0 && (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-8">
+                {project.gallery.map((image, index) => (
+                  <img key={`${image.slice(0, 24)}-${index}`} src={getApiAssetUrl(image)} alt={`${project.title} gallery ${index + 1}`} className="h-64 w-full rounded-xl object-cover" />
+                ))}
+              </div>
+            )}
 
             {/* Technologies */}
             {project.technologies.length > 0 && (
