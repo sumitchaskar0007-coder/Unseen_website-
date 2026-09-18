@@ -41,7 +41,7 @@ The health response should contain `"database":"connected"`.
 
 ## 4. Configure Nginx
 
-Copy `deploy/nginx.conf.example` to `/etc/nginx/sites-available/unseen-studios`, replace both `your-domain.com` values, and enable it:
+Copy `deploy/nginx.conf.example` to `/etc/nginx/sites-available/unseen-studios` and enable it:
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/unseen-studios /etc/nginx/sites-enabled/unseen-studios
@@ -54,7 +54,7 @@ sudo systemctl reload nginx
 After DNS points to the VPS:
 
 ```bash
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+sudo certbot --nginx -d unseenstudios.co.in -d www.unseenstudios.co.in
 ```
 
 ## Updating the website
