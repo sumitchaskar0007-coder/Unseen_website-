@@ -17,7 +17,7 @@ const mainLinks = [
   ['Home', '/'],
   ['About', '/about'],
   ['Work', '/portfolio'],
-  ['Gallery', '/gallery'],
+  ['Portfolio', '/gallery'],
   ['Process', '/process'],
   ['Journal', '/blog'],
 ]

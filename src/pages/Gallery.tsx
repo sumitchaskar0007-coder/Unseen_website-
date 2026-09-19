@@ -110,9 +110,9 @@ const Gallery = () => {
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="inner-editorial-heading mb-12" data-reveal>
-          <p className="inner-editorial-kicker">Behind the work</p>
-          <h2>Moments from<br /><strong>inside the studio.</strong></h2>
-          <p>Production, collaboration and the details that shape every Unseen Studios project.</p>
+          <p className="inner-editorial-kicker">Portfolio</p>
+          <h2>Selected work,<br /><strong>made to be seen.</strong></h2>
+          <p>Explore films, campaigns, digital experiences and creative work produced by Unseen Studios.</p>
         </div>
 
         {/* Search and Filter */}
@@ -121,7 +121,7 @@ const Gallery = () => {
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search gallery..."
+              placeholder="Search portfolio..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

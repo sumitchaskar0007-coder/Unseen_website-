@@ -18,7 +18,7 @@ const pageNames: Record<string, string> = {
   '/portfolio': 'Our Work',
   '/process': 'Our Process',
   '/contact': 'Contact Us',
-  '/gallery': 'Gallery',
+  '/gallery': 'Portfolio',
   '/careers': 'Careers',
   '/blog': 'Insights',
 }

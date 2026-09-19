@@ -1,7 +1,7 @@
 import { ArrowUpRight, LockKeyhole } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const nav = [['About', '/about'], ['Services', '/services'], ['Work', '/portfolio'], ['Gallery', '/gallery'], ['Journal', '/blog'], ['Contact', '/contact']]
+const nav = [['About', '/about'], ['Services', '/services'], ['Work', '/portfolio'], ['Portfolio', '/gallery'], ['Journal', '/blog'], ['Contact', '/contact']]
 const resources = [['Careers', '/careers'], ['Privacy', '/privacy-policy'], ['Terms', '/terms-of-service']]
 
 export function Footer() {
