@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { AlertCircle, MapPin, MessageCircle, Send } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { getWhatsAppChatUrl, getWhatsAppDigits, openWhatsAppWithMessage } from '../config/whatsapp'
+import { getWhatsAppChatUrl, openWhatsAppWithMessage } from '../config/whatsapp'
 import { IconInstagram, IconLinkedin, IconYoutube } from '../components/icons/SocialIcons'
 import { MagneticButton } from '../components/MagneticButton'
 import { Reveal } from '../components/Reveal'
@@ -37,7 +37,6 @@ export function ContactPage() {
   const services = content.services.split('\n').map((service) => service.trim()).filter(Boolean)
   const [status, setStatus] = useState<'idle' | 'sent' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
-  const waDigits = getWhatsAppDigits()
   const waQuick = getWhatsAppChatUrl()
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -47,15 +46,9 @@ export function ContactPage() {
     const fd = new FormData(e.currentTarget)
     const body = buildInquiryMessage(fd)
 
-    if (!getWhatsAppDigits()) {
-      setError('Add your WhatsApp number to the project .env file as VITE_WHATSAPP_NUMBER (digits only, with country code).')
-      setStatus('error')
-      return
-    }
-
     const ok = openWhatsAppWithMessage(body)
     if (!ok) {
-      setError('Could not open WhatsApp. Check the number in .env and try again.')
+      setError('Could not open WhatsApp. Please try again.')
       setStatus('error')
       return
     }
@@ -87,32 +80,25 @@ export function ContactPage() {
         <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-start lg:gap-14">
           <div className="space-y-8">
             <Reveal>
-              <div className="flex flex-wrap items-center gap-3">
-                {waQuick ? (
-                  <MagneticButton>
-                    <a
-                      href={waQuick}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-orange-400/25 bg-orange-500/10 px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-orange-500/20"
-                    >
-                      <MessageCircle className="h-4 w-4 shrink-0 text-orange-500" aria-hidden />
-                      Chat on WhatsApp
-                    </a>
-                  </MagneticButton>
-                ) : (
-                  <p className="rounded-2xl border border-orange-400/20 bg-orange-500/10 px-4 py-3 text-xs font-medium text-black/80">
-                    Set <code className="rounded bg-black/10 px-1.5 py-0.5">VITE_WHATSAPP_NUMBER</code> in{' '}
-                    <code className="rounded bg-black/10 px-1.5 py-0.5">.env</code> to enable the WhatsApp button.
-                  </p>
-                )}
-                <div className="flex items-center gap-2">
+              <div className="contact-quick-actions">
+                <MagneticButton className="contact-whatsapp-wrap">
+                  <a
+                    href={waQuick || 'https://wa.me/917709814062'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="contact-whatsapp-link"
+                  >
+                    <MessageCircle aria-hidden />
+                    Chat on WhatsApp
+                  </a>
+                </MagneticButton>
+                <div className="contact-social-links" aria-label="Social media links">
                   <a
                     href="https://www.instagram.com/unseenstudios.in"
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Instagram"
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                    className="contact-social-link"
                   >
                     <IconInstagram className="h-4 w-4" />
                   </a>
@@ -121,7 +107,7 @@ export function ContactPage() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Facebook"
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                    className="contact-social-link"
                   >
                     <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -132,7 +118,7 @@ export function ContactPage() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label="YouTube"
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                    className="contact-social-link"
                   >
                     <IconYoutube className="h-4 w-4" />
                   </a>
@@ -141,7 +127,7 @@ export function ContactPage() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label="LinkedIn"
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white text-black/60 transition-all hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500"
+                    className="contact-social-link"
                   >
                     <IconLinkedin className="h-4 w-4" />
                   </a>
@@ -252,11 +238,6 @@ export function ContactPage() {
                   </button>
                 </MagneticButton>
 
-                {waDigits ? (
-                  <p className="text-center text-[11px] text-black/50 sm:text-left">
-                    Submits open WhatsApp to <span className="text-black/80">{waDigits}</span> with your message.
-                  </p>
-                ) : null}
               </div>
             </motion.form>
           </Reveal>

@@ -284,6 +284,16 @@ h6,
 .site-inner-page select { border-color:var(--site-line); background:#fff; color:#171717; }
 .site-inner-page :focus-visible { outline-color:#171717; }
 
+/* Contact actions stay compact, legible and correctly sized on every viewport. */
+.contact-quick-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.contact-whatsapp-link { display:inline-flex; min-height:46px; align-items:center; justify-content:center; gap:9px; border:1px solid #171717; border-radius:999px; padding:0 22px; background:#171717; color:#fff; font-size:14px; font-weight:700; line-height:1; transition:transform .2s,background .2s,color .2s; }
+.contact-whatsapp-link:hover { transform:translateY(-2px); background:#fff; color:#171717; }
+.contact-whatsapp-link svg { width:18px; height:18px; flex:none; }
+.contact-social-links { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.site-inner-page .contact-social-link { display:grid; width:46px; height:46px; flex:0 0 46px; place-items:center; border:1px solid rgba(23,23,23,.16); border-radius:50%; background:#fff!important; color:#171717!important; box-shadow:none!important; transition:transform .2s,background .2s,color .2s; }
+.site-inner-page .contact-social-link:hover { transform:translateY(-2px); background:#171717!important; color:#fff!important; }
+.contact-social-link svg { display:block; width:18px; height:18px; }
+
 /* Process is intentionally light; keep its text and cards readable on the warm canvas. */
 .site-inner-page .process-section {
   background-color:#f7f3e7!important;
@@ -333,6 +343,21 @@ h6,
   .inner-editorial-intro { width:calc(100% - 32px); grid-template-columns:1fr; }
   .inner-editorial-round { width:118px; height:118px; }
   .inner-editorial-heading h2 { font-size:clamp(2.8rem,13vw,4.5rem); }
+  .site-inner-page { max-width:100%; overflow-x:clip; }
+  .site-inner-page img,
+  .site-inner-page video,
+  .site-inner-page iframe { max-width:100%; }
+  .site-inner-page h1,
+  .site-inner-page h2,
+  .site-inner-page h3 { overflow-wrap:anywhere; }
+  .site-inner-page form,
+  .site-inner-page form>* { min-width:0; }
+  .contact-quick-actions { width:100%; align-items:stretch; }
+  .contact-whatsapp-wrap { width:100%; }
+  .contact-whatsapp-link { width:100%; }
+  .contact-social-links { width:100%; padding-top:2px; }
+  .site-inner-page .contact-social-link { width:42px; height:42px; flex-basis:42px; }
+  .contact-social-link svg { width:17px; height:17px; }
 }
 
 /* One consistent typeface across the complete website */
