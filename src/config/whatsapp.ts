@@ -1,10 +1,10 @@
 /**
  * Set `VITE_WHATSAPP_NUMBER` in `.env` (digits only, with country code, no spaces or +).
- * Example: VITE_WHATSAPP_NUMBER=919876543210
+ * Default business number: +91 7709814062.
  */
 export function getWhatsAppDigits(): string {
   const raw = import.meta.env.VITE_WHATSAPP_NUMBER as string | undefined
-  return (raw ?? '').replace(/\D/g, '')
+  return (raw || '917709814062').replace(/\D/g, '')
 }
 
 export function getWhatsAppChatUrl(text?: string): string | null {

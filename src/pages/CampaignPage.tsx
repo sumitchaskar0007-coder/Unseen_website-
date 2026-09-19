@@ -109,7 +109,7 @@ const SocialMediaMarketing = () => {
     name: 'Unseen Studios',
     tagline: 'Creative Digital Agency',
     location: 'Sinhgad Road, Pune, Maharashtra 411051',
-    phone: '+91 98765 43210',
+    phone: '+91 77098 14062',
     email: 'info@unseenstudios.com',
     website: 'www.unseenstudios.com'
   };

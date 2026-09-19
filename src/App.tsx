@@ -27,10 +27,11 @@ import ERP from './pages/ERP';
 import DigitalPage from './pages/DigitalPage';
 import CampaignPage from './pages/CampaignPage';
 import BulkSmsPage from './pages/BulkSmsPage';
+import { getWhatsAppChatUrl } from './config/whatsapp';
 
 // Social Media URLs - Update these with your actual URLs
 const SOCIAL_URLS = {
-  whatsapp: 'https://wa.me/7709814062',
+  whatsapp: getWhatsAppChatUrl() || 'https://wa.me/917709814062',
   youtube: 'https://www.youtube.com/@unseenmarathi',
   instagram: 'https://www.instagram.com/unseenstudios.in',
 }
@@ -40,7 +41,7 @@ const SocialIcons = () => {
   const location = useLocation()
   
   // Don't show social icons on admin pages
-  if (location.pathname.startsWith('/admin') || location.pathname === '/') {
+  if (location.pathname.startsWith('/admin')) {
     return null
   }
   

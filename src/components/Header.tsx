@@ -7,6 +7,7 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 
 import { serviceCategories } from '../data/serviceCategories'
@@ -399,6 +400,7 @@ export function Header() {
           MOBILE MENU
          ======================================================= */}
 
+      {createPortal(
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -772,11 +774,21 @@ export function Header() {
               >
                 hello.trijjamedia@gmail.com
               </a>
+
+              <a
+                href="https://wa.me/917709814062"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp · +91 77098 14062
+              </a>
             </motion.div>
 
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
+      )}
     </header>
   )
 }

@@ -270,7 +270,7 @@ export function HomepageManager() {
 }
 
 export function SettingsManager() {
-  const defaults={studioName:'Unseen Studios',email:'hello.trijjamedia@gmail.com',phone:'+91 73855 01161',location:'Pune, Maharashtra 411068'}
+  const defaults={studioName:'Unseen Studios',email:'hello.trijjamedia@gmail.com',phone:'+91 77098 14062',location:'Pune, Maharashtra 411068'}
   const [form,setForm]=useState(()=>cmsService.get('settings',defaults)),[saved,setSaved]=useState(false)
   const fields=[['studioName','Studio Name'],['email','Contact Email'],['phone','Phone'],['location','Location']] as const
   return <div className="cms-page"><PageHeader eyebrow="Website" title="Settings" copy="Core studio contact and publishing preferences."/>{saved&&<div className="cms-success">Settings saved successfully.</div>}<form className="cms-panel" onSubmit={(event)=>{event.preventDefault();cmsService.set('settings',form);setSaved(true)}}><div className="cms-form-grid">{fields.map(([name,label])=><label className="cms-field" key={name}><span>{label}</span><input value={form[name]} onChange={(event)=>setForm({...form,[name]:event.target.value})}/></label>)}</div><button className="cms-primary-button" type="submit">Save settings</button></form></div>
