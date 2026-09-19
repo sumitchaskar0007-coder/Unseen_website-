@@ -186,7 +186,8 @@ h6,
 .site-contact-link { display:flex; align-items:center; gap:16px; padding:12px 18px; border:1px solid currentColor; border-radius:99px; color:inherit; font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; transition:.3s; }
 .site-contact-link svg { width:15px; }
 .site-contact-link:hover { background:#121212; border-color:#121212; color:#fff; }
-.site-menu-button { display:none; color:inherit; background:none; }
+.site-menu-button { position:relative; z-index:2; display:none; width:46px; height:46px; flex:0 0 46px; align-items:center; justify-content:center; border:1px solid currentColor; border-radius:50%; color:inherit; background:transparent; cursor:pointer; }
+.site-menu-button svg { display:block; width:22px; height:22px; max-width:none; stroke-width:1.8; }
 .site-mobile-menu { position:fixed; inset:0; z-index:10000; display:flex; flex-direction:column; padding:24px; overflow-y:auto; background:var(--site-canvas); color:#141414; }
 .site-mobile-top { display:flex; justify-content:space-between; align-items:center; }
 .site-mobile-top button { width:52px; height:52px; display:grid; place-items:center; border:1px solid #141414; border-radius:50%; background:transparent; }
@@ -213,10 +214,13 @@ h6,
 
 @media (max-width:1050px) {
   .site-desktop-nav,.site-contact-link { display:none; }
-  .site-menu-button { display:block; }
+  .site-header-actions { flex:0 0 auto; }
+  .site-menu-button { display:flex; }
 }
 @media (max-width:700px) {
   .site-header-inner { width:calc(100% - 32px); height:72px; }
+  .site-wordmark>div { width:145px!important; }
+  .site-menu-button { width:44px; height:44px; flex-basis:44px; color:#fff; border-color:#171717; background:#171717; box-shadow:0 6px 18px rgba(18,18,18,.16); }
   .site-mobile-meta { flex-direction:column; }
 }
 

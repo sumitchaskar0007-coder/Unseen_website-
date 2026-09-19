@@ -383,8 +383,10 @@ export function Header() {
           <button
             type="button"
             className="site-menu-button"
-            onClick={() => setMenuOpen(true)}
+            onClick={() => setMenuOpen((open) => !open)}
             aria-label="Open menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
           >
             <Menu />
           </button>
@@ -400,6 +402,7 @@ export function Header() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            id="mobile-navigation"
             className="site-mobile-menu"
             initial={{
               y: '-100%',
