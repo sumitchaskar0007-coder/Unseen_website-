@@ -2,6 +2,7 @@ import { Archive, ArrowDown, ArrowUp, BriefcaseBusiness, ChevronLeft, ChevronRig
 import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent, FormEvent, ReactNode } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import api from '../../api'
 import { cmsService } from '../../services/cmsService'
 import type { CmsRecord } from '../../services/cmsService'
 import { fetchPageContent, getPageContent, savePageContent } from '../../data/pageContent'
@@ -148,11 +149,13 @@ export function MediaManager() {
     cmsService.sync<CmsItem>('media').then(async(records)=>{
       // The previous version stored media only in this browser. On the first
       // deployment with server-backed media, preserve and publish that cache.
-      if(needsMigration&&!records.length&&localRecords.length){
+      if(needsMigration&&localRecords.length){
         try {
-          await cmsService.saveRemote('media',localRecords)
+          const mergedRecords=Array.from(new Map([...records,...localRecords].map((item)=>[item.id,item])).values())
+          const migratedRecords=await publishMediaFiles(mergedRecords)
+          await cmsService.saveRemote('media',migratedRecords)
           localStorage.setItem(migrationKey,'1')
-          if(active)setItems(localRecords)
+          if(active)setItems(migratedRecords)
         } catch(reason) {
           cmsService.save('media',localRecords)
           if(active){setItems(localRecords);setError(reason instanceof Error?reason.message:'Your local media is safe, but it could not be published yet.')}
@@ -184,7 +187,9 @@ export function MediaManager() {
         if(total>3*1024*1024)throw new Error('Browser storage is limited. Upload files under 3 MB total, or use a hosted media backend.')
         created=await Promise.all(files.map(async(file,index)=>{
           const data=await readFile(file),isVideo=file.type.startsWith('video/')
-          return {id:crypto.randomUUID(),name:form.name.trim()||(files.length>1?`${file.name.replace(/\.[^.]+$/,'')} ${index+1}`:file.name.replace(/\.[^.]+$/,'')),description:form.description,category,status:form.status,mediaType:isVideo?'video':'image',image:isVideo?'':data,videoUrl:isVideo?data:'',size:`${(file.size/1024/1024).toFixed(2)} MB`} as CmsItem
+          const response=await api.post<{url:string}>('/media/upload',{name:file.name,data})
+          const source=response.data.url
+          return {id:crypto.randomUUID(),name:form.name.trim()||(files.length>1?`${file.name.replace(/\.[^.]+$/,'')} ${index+1}`:file.name.replace(/\.[^.]+$/,'')),description:form.description,category,status:form.status,mediaType:isVideo?'video':'image',image:isVideo?'':source,videoUrl:isVideo?source:'',size:`${(file.size/1024/1024).toFixed(2)} MB`} as CmsItem
         }))
       } else {
         const url=form.url.trim(),isYoutube=/youtu\.be|youtube\.com/i.test(url),isInstagram=/instagram\.com/i.test(url)
@@ -207,6 +212,19 @@ export function MediaManager() {
     <div className="cms-toolbar cms-media-toolbar"><label className="cms-search"><Search/><input value={search} onChange={(event)=>setSearch(event.target.value)} placeholder="Search media..."/></label><div className="cms-filters">{Array.from(new Set(['All','Image','Video','YouTube','Instagram',...itemCategories])).map((value)=><button key={value} className={filter===value?'is-active':''} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
     {visible.length?<div className="cms-media-grid">{visible.map((item)=><article key={item.id}><MediaThumb item={item}/><div><div className="cms-media-card-meta"><StatusBadge status={String(item.category||'General')}/><StatusBadge status={String(item.mediaType||'image')}/></div><strong>{String(item.name||'Untitled media')}</strong><span>{String(item.size||'')}</span><div><button onClick={()=>navigator.clipboard.writeText(sourceFor(item))}>Copy source</button><button aria-label={`Delete ${String(item.name||'media')}`} onClick={()=>remove(item.id)}><Trash2/></button></div></div></article>)}</div>:<EmptyState title="No media found" copy={items.length?'Try another search or category.':'Add images, video files, YouTube links or advertising media to start your library.'} to="#"/>}
   </div>
+}
+
+async function publishMediaFiles(records:CmsItem[]) {
+  return Promise.all(records.map(async(item)=>{
+    const next={...item}
+    for(const field of ['image','videoUrl'] as const){
+      const source=String(next[field]||'')
+      if(!source.startsWith('data:'))continue
+      const response=await api.post<{url:string}>('/media/upload',{name:String(item.name||'media'),data:source})
+      next[field]=response.data.url
+    }
+    return next
+  }))
 }
 
 function youtubeEmbed(url:string) {

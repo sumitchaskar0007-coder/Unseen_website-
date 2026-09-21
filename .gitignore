@@ -23,6 +23,7 @@ node_modules
 *.sw?
 node_modules/
 dist/
+uploads/
 .env
 .env.local
 .env.development.local

@@ -46,7 +46,16 @@ const GalleryMedia = ({ item, modal = false }: { item: GalleryItem; modal?: bool
     return <iframe src={instagramEmbed(item.videoUrl || '')} title={item.title} className={className} allowFullScreen loading="lazy" />;
   }
   if (item.mediaType === 'video') {
-    return <video src={item.videoUrl} className={className} controls={modal} muted={!modal} preload="metadata" />;
+    return <video
+      src={item.videoUrl}
+      className={className}
+      controls={modal}
+      muted={!modal}
+      playsInline
+      preload="metadata"
+      onMouseEnter={(event) => { if (!modal) void event.currentTarget.play().catch(() => undefined); }}
+      onMouseLeave={(event) => { if (!modal) event.currentTarget.pause(); }}
+    />;
   }
   return <img src={item.imageUrl} alt={item.title} className={className} />;
 };

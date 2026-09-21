@@ -1,13 +1,15 @@
 import cors from 'cors'
-import { createHmac, timingSafeEqual } from 'node:crypto'
+import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto'
 import dotenv from 'dotenv'
 import express from 'express'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import mongoose from 'mongoose'
 
 const serverDirectory = dirname(fileURLToPath(import.meta.url))
 const environmentPath = resolve(serverDirectory, '../.env')
+const uploadsDirectory = resolve(serverDirectory, '../uploads')
 dotenv.config({ path: environmentPath })
 
 const app = express()
@@ -81,6 +83,31 @@ app.post('/api/admin/login', (request, response) => {
   return response.json({ token: createAdminToken(suppliedEmail), email: suppliedEmail })
 })
 
+app.post('/api/media/upload', requireAdmin, async (request, response, next) => {
+  try {
+    const data = String(request.body?.data || '')
+    const match = data.match(/^data:(image\/(?:jpeg|png|webp|gif)|video\/(?:mp4|webm|ogg));base64,([A-Za-z0-9+/=\s]+)$/)
+    if (!match) return response.status(400).json({ message: 'Unsupported media file' })
+
+    const extensions = {
+      'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif',
+      'video/mp4': 'mp4', 'video/webm': 'webm', 'video/ogg': 'ogv',
+    }
+    const buffer = Buffer.from(match[2].replace(/\s/g, ''), 'base64')
+    if (!buffer.length || buffer.length > 3 * 1024 * 1024) {
+      return response.status(413).json({ message: 'Media files must be smaller than 3 MB' })
+    }
+
+    const mediaDirectory = resolve(uploadsDirectory, 'media')
+    await mkdir(mediaDirectory, { recursive: true })
+    const filename = `${randomUUID()}.${extensions[match[1]]}`
+    await writeFile(resolve(mediaDirectory, filename), buffer, { flag: 'wx' })
+    return response.status(201).json({ url: `/uploads/media/${filename}` })
+  } catch (error) {
+    return next(error)
+  }
+})
+
 app.get('/api/pages/:page', async (request, response, next) => {
   try {
     if (!['about', 'process', 'contact'].includes(request.params.page)) {
@@ -147,6 +174,7 @@ app.get('/api/health', (_request, response) => {
 })
 
 const productionDirectory = resolve(serverDirectory, '../dist')
+app.use('/uploads', express.static(uploadsDirectory, { maxAge: '30d', immutable: true }))
 app.use(express.static(productionDirectory, { maxAge: '1h', index: false }))
 app.use((request, response, next) => {
   if (request.method !== 'GET' || request.path.startsWith('/api/') || !request.accepts('html')) return next()
