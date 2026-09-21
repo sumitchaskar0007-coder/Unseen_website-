@@ -71,7 +71,27 @@ export function ContentManager({module}:{module:CmsModule}) {
   const [items,setItems]=useState<CmsItem[]>(()=>readItems(module)),[loading,setLoading]=useState(true),[search,setSearch]=useState(''),[filter,setFilter]=useState('All'),[deleteItem,setDeleteItem]=useState<CmsItem|null>(null),[previewItem,setPreviewItem]=useState<CmsItem|null>(null),[message,setMessage]=useState('')
   const isEditor=location.pathname.endsWith('/new')||Boolean(id),editing=id?items.find((item)=>item.id===id):undefined
   const filtered=useMemo(()=>items.filter((item)=>String(item.name||'').toLowerCase().includes(search.toLowerCase())&&(filter==='All'||item.status===filter||(filter==='Featured'&&item.featured))),[items,search,filter])
-  useEffect(()=>{let active=true;setLoading(true);cmsService.sync<CmsItem>(module).then((records)=>{if(active)setItems(records)}).catch(()=>{if(active)setMessage('Could not load the latest website data. Check the API connection.')}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[module])
+  useEffect(()=>{
+    let active=true
+    const localRecords=readItems(module)
+    const migrationKey=`unseen-cms-server-migrated-${module}`
+    const needsMigration=!localStorage.getItem(migrationKey)
+    setLoading(true)
+    cmsService.sync<CmsItem>(module).then(async(records)=>{
+      // Preserve content created by the older browser-only admin. Local items
+      // take precedence during this one-time migration, including matching IDs.
+      const merged=needsMigration&&localRecords.length
+        ? Array.from(new Map([...records,...localRecords].map((item)=>[item.id,item])).values())
+        : records
+      if(needsMigration&&localRecords.length&&JSON.stringify(merged)!==JSON.stringify(records))await cmsService.saveRemote(module,merged)
+      localStorage.setItem(migrationKey,'1')
+      if(active)setItems(merged)
+    }).catch(()=>{
+      cmsService.save(module,localRecords)
+      if(active){setItems(localRecords);setMessage('Your local data is safe, but the shared database could not be reached.')}
+    }).finally(()=>{if(active)setLoading(false)})
+    return()=>{active=false}
+  },[module])
   const persist=async(next:CmsItem[])=>{await cmsService.saveRemote(module,next);setItems(next)}
   if(loading)return <div className="cms-page"><PageHeader eyebrow="Content" title={config.title} copy="Loading the latest website data..."/></div>
   if(isEditor)return <ContentEditor module={module} existing={editing} onSave={async(item)=>{const wasEditing=Boolean(editing);await persist(editing?items.map((entry)=>entry.id===editing.id?item:entry):[item,...items]);navigate(`/admin/${module}`,{state:{message:`${config.singular} ${wasEditing?'updated':'created'} successfully.`}})}}/>
@@ -120,7 +140,33 @@ export function MediaManager() {
     const matchesSearch=String(item.name||'').toLowerCase().includes(query)||String(item.description||'').toLowerCase().includes(query)
     return matchesSearch&&(filter==='All'||item.category===filter||item.mediaType===filter.toLowerCase())
   })
-  useEffect(()=>{let active=true;cmsService.sync<CmsItem>('media').then((records)=>{if(active)setItems(records)}).catch(()=>{if(active)setError('Could not load the latest media library. Check the API connection.')});return()=>{active=false}},[])
+  useEffect(()=>{
+    let active=true
+    const localRecords=readItems('media')
+    const migrationKey='unseen-cms-server-migrated-media'
+    const needsMigration=!localStorage.getItem(migrationKey)
+    cmsService.sync<CmsItem>('media').then(async(records)=>{
+      // The previous version stored media only in this browser. On the first
+      // deployment with server-backed media, preserve and publish that cache.
+      if(needsMigration&&!records.length&&localRecords.length){
+        try {
+          await cmsService.saveRemote('media',localRecords)
+          localStorage.setItem(migrationKey,'1')
+          if(active)setItems(localRecords)
+        } catch(reason) {
+          cmsService.save('media',localRecords)
+          if(active){setItems(localRecords);setError(reason instanceof Error?reason.message:'Your local media is safe, but it could not be published yet.')}
+        }
+        return
+      }
+      localStorage.setItem(migrationKey,'1')
+      if(active)setItems(records)
+    }).catch(()=>{
+      cmsService.save('media',localRecords)
+      if(active){setItems(localRecords);setError('Your local media is safe, but the shared library could not be reached.')}
+    })
+    return()=>{active=false}
+  },[])
   const persist=async(next:CmsItem[])=>{await cmsService.saveRemote('media',next);setItems(next)}
   const reset=()=>{setForm({name:'',description:'',category:'General',customCategory:'',source:'upload',url:'',status:'Published'});setFiles([]);setError('');setShowEditor(false)}
   const remove=(id:string)=>{void persist(items.filter((item)=>item.id!==id)).catch((reason)=>setError(reason instanceof Error?reason.message:'Unable to delete media.'))}
@@ -266,10 +312,22 @@ export function PageContentManager() {
 }
 
 export function HomepageManager() {
-  const initial={heroHeading:'Ideas with clarity. Built for impact.',heroDescription:'We turn ambitious ideas into memorable brands, films and digital experiences.',primaryButton:'Explore our work',secondaryButton:'View services',heroImage:'',heroVideo:'',aboutHeading:'We bridge the gap between brands and modern digital experiences.',aboutDescription:'Unseen Studios unites strategy, filmmaking, design, technology and growth so every idea moves with one clear direction.',aboutImage:'',aboutCta:'Discover our story',projects:'100+',clients:'45+',years:'7+',awards:'11',founderName:'Govind Budhwant',founderRole:'Founder & Creative Director',founderBio:'Govind founded Unseen Studios to build a more thoughtful kind of creative partner—close to the business, curious about the audience and uncompromising about the craft.',founderImage:'',featuredProjects:'',featuredTestimonials:'',featuredServices:'',ctaHeading:'Have a project in mind?',ctaDescription:'Let’s make it unmissable.',ctaButton:'Start a conversation',ctaLink:'/contact'}
+  const initial=useMemo(()=>({heroHeading:'Ideas with clarity. Built for impact.',heroDescription:'We turn ambitious ideas into memorable brands, films and digital experiences.',primaryButton:'Explore our work',secondaryButton:'View services',heroImage:'',heroVideo:'',aboutHeading:'We bridge the gap between brands and modern digital experiences.',aboutDescription:'Unseen Studios unites strategy, filmmaking, design, technology and growth so every idea moves with one clear direction.',aboutImage:'',aboutCta:'Discover our story',projects:'100+',clients:'45+',years:'7+',awards:'11',founderName:'Govind Budhwant',founderRole:'Founder & Creative Director',founderBio:'Govind founded Unseen Studios to build a more thoughtful kind of creative partner—close to the business, curious about the audience and uncompromising about the craft.',founderImage:'',featuredProjects:'',featuredTestimonials:'',featuredServices:'',ctaHeading:'Have a project in mind?',ctaDescription:'Let’s make it unmissable.',ctaButton:'Start a conversation',ctaLink:'/contact'}),[])
   const [form,setForm]=useState<Record<string,string>>(()=>({...initial,...cmsService.get<Partial<Record<string,string>>>('homepage',initial)})),[saved,setSaved]=useState(false)
   const sections=[['Hero',['heroHeading','heroDescription','primaryButton','secondaryButton','heroVideo']],['Who we are',['aboutHeading','aboutDescription','aboutCta']],['Statistics',['projects','clients','years','awards']],['Founder',['founderName','founderRole','founderBio']],['Featured content',['featuredProjects','featuredTestimonials','featuredServices']],['Call to action',['ctaHeading','ctaDescription','ctaButton','ctaLink']]] as const
   const labels:Record<string,string>={heroHeading:'Hero Heading',heroDescription:'Hero Description',primaryButton:'Primary Button',secondaryButton:'Secondary Button',heroVideo:'Hero Video URL',aboutHeading:'Who We Are Heading',aboutDescription:'Who We Are Description',aboutCta:'About Link Text',projects:'Projects',clients:'Clients',years:'Years',awards:'Creative Disciplines',founderName:'Founder Name',founderRole:'Founder Title',founderBio:'Founder Story',featuredProjects:'Featured Project IDs',featuredTestimonials:'Featured Testimonial IDs',featuredServices:'Service Order / IDs',ctaHeading:'Heading',ctaDescription:'Description',ctaButton:'Button Text',ctaLink:'Button Link'}
+  useEffect(()=>{
+    let active=true
+    const migrationKey='unseen-cms-server-migrated-homepage'
+    const hasLocal=localStorage.getItem('unseen-cms-homepage')!==null
+    const localValue={...initial,...cmsService.get<Partial<Record<string,string>>>('homepage',initial)}
+    cmsService.syncValue<Partial<Record<string,string>>>('homepage').then(async(remote)=>{
+      if(remote){if(active)setForm({...initial,...remote})}
+      else if(hasLocal&&!localStorage.getItem(migrationKey)){await cmsService.setRemote('homepage',localValue);if(active)setForm(localValue)}
+      localStorage.setItem(migrationKey,'1')
+    }).catch(()=>{if(active)setForm(localValue)})
+    return()=>{active=false}
+  },[initial])
   return <div className="cms-page"><PageHeader eyebrow="Website" title="Homepage Content" copy="Manage homepage messaging, studio story, founder information and featured content."/>{saved&&<div className="cms-success">Homepage content saved successfully. The public homepage will use these updates immediately.</div>}<form className="cms-homepage-form" onSubmit={(e)=>{e.preventDefault();void cmsService.setRemote('homepage',form).catch(()=>undefined);setSaved(true)}}><section className="cms-panel"><div className="cms-panel-head"><h2>Homepage media</h2></div><div className="cms-form-grid"><ImageUploader label="Hero Image" multiple={false} value={form.heroImage} onChange={(value)=>setForm({...form,heroImage:String(value)})}/><ImageUploader label="Studio / About Image" multiple={false} value={form.aboutImage} onChange={(value)=>setForm({...form,aboutImage:String(value)})}/><ImageUploader label="Founder Portrait" multiple={false} value={form.founderImage} onChange={(value)=>setForm({...form,founderImage:String(value)})}/></div></section>{sections.map(([title,fields])=><section className="cms-panel" key={title}><div className="cms-panel-head"><h2>{title}</h2></div><div className="cms-form-grid">{fields.map((field)=><label className={`cms-field ${field.toLowerCase().includes('description')||field==='founderBio'?'is-wide':''}`} key={field}><span>{labels[field]}</span>{field.toLowerCase().includes('description')||field==='founderBio'?<textarea rows={4} value={form[field]} onChange={(e)=>setForm({...form,[field]:e.target.value})}/>:<input value={form[field]} onChange={(e)=>setForm({...form,[field]:e.target.value})}/>}</label>)}</div></section>)}<button className="cms-primary-button" type="submit">Save homepage</button></form></div>
 }
 
