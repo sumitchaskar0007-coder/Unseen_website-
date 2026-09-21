@@ -71,6 +71,7 @@ const Gallery = () => {
   }, []);
 
   const fetchGallery = async () => {
+    await Promise.allSettled([cmsService.sync('media'), cmsService.sync('projects')]);
     const mediaItems: GalleryItem[] = cmsService.published('media').map((item) => ({
       _id: item.id,
       title: String(item.name || 'Studio image').replace(/\.[^.]+$/, ''),

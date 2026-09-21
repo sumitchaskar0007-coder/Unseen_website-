@@ -39,6 +39,7 @@ const Careers = () => {
   useEffect(() => { filterCareers(); }, [selectedType, careers]);
 
   const fetchCareers = async () => {
+    await cmsService.sync('hiring').catch(() => [])
     const normaliseType = (value: string) => value === 'Full Time' ? 'Full-time' : value === 'Part Time' ? 'Part-time' : value;
     const localCareers: CareerItem[] = cmsService.published('hiring').map((item) => ({
       _id: item.id,

@@ -43,7 +43,7 @@ const cmsCollectionSchema = new mongoose.Schema({
 }, { timestamps: true, suppressReservedKeysWarning: true })
 
 const CmsCollection = mongoose.models.CmsCollection || mongoose.model('CmsCollection', cmsCollectionSchema)
-const cmsCollections = new Set(['projects', 'clients', 'blogs', 'testimonials', 'hiring', 'services', 'team', 'homepage', 'settings'])
+const cmsCollections = new Set(['projects', 'clients', 'blogs', 'testimonials', 'hiring', 'services', 'team', 'media', 'homepage', 'settings'])
 
 mongoose.connection.on('disconnected', () => console.warn('MongoDB connection closed'))
 mongoose.connection.on('error', (error) => console.error(`MongoDB connection error: ${error.message}`))

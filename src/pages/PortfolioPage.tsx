@@ -45,6 +45,7 @@ const PortfolioPage = () => {
   }, [selectedCategory, projects]);
 
   const fetchProjects = async () => {
+    await cmsService.sync('projects').catch(() => [])
     const localProjects: Project[] = cmsService.published('projects').map((item) => ({
       _id: item.id,
       title: String(item.name || 'Untitled project'),

@@ -32,6 +32,7 @@ const ProjectPage = () => {
   const fetchProject = async (projectId: string) => {
     try {
       setLoading(true);
+      await cmsService.sync('projects').catch(() => [])
       const local = cmsService.published('projects').find((item) => item.id === projectId);
       if (local) {
         setProject({

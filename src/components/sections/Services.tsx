@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -165,6 +165,16 @@ export function Services({
   showViewMore = false,
   variant,
 }: ServicesProps) {
+  const [, setContentRevision] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    cmsService.sync("services").catch(() => []).finally(() => {
+      if (active) setContentRevision((revision) => revision + 1);
+    });
+    return () => { active = false; };
+  }, []);
+
   const cmsServices: ServiceItem[] = cmsService.published("services")
     .sort((a, b) => Number(a.order || 0) - Number(b.order || 0))
     .map((item) => ({
