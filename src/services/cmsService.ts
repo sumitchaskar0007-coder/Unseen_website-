@@ -28,7 +28,7 @@ export const cmsService = {
   },
 
   async sync<T = CmsRecord>(collection: string): Promise<T[]> {
-    const response = await fetch(`${apiBase}/cms/${collection}`)
+    const response = await fetch(`${apiBase}/cms/${collection}`, { cache: 'no-store' })
     if (!response.ok) throw new Error('Unable to sync content')
     const payload = await response.json() as { records?: T[] }
     const records = Array.isArray(payload.records) ? payload.records : []
@@ -55,7 +55,7 @@ export const cmsService = {
   },
 
   async syncValue<T>(collection: string): Promise<T | null> {
-    const response = await fetch(`${apiBase}/cms/${collection}`)
+    const response = await fetch(`${apiBase}/cms/${collection}`, { cache: 'no-store' })
     if (!response.ok) throw new Error('Unable to sync content')
     const payload = await response.json() as { value?: T | null }
     if (payload.value != null) cache.set(collection, payload.value)

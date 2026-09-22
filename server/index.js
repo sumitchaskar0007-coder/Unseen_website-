@@ -30,6 +30,10 @@ app.use(cors({
   credentials: true,
 }))
 app.use(express.json({ limit: '5mb' }))
+app.use('/api', (_request, response, next) => {
+  response.set('Cache-Control', 'no-store')
+  next()
+})
 
 const pageContentSchema = new mongoose.Schema({
   page: { type: String, required: true, unique: true, enum: ['about', 'process', 'contact'] },
@@ -178,7 +182,9 @@ app.use('/uploads', express.static(uploadsDirectory, { maxAge: '30d', immutable:
 app.use(express.static(productionDirectory, { maxAge: '1h', index: false }))
 app.use((request, response, next) => {
   if (request.method !== 'GET' || request.path.startsWith('/api/') || !request.accepts('html')) return next()
-  return response.sendFile(resolve(productionDirectory, 'index.html'))
+  return response.sendFile(resolve(productionDirectory, 'index.html'), {
+    headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+  })
 })
 
 app.use((error, _request, response, _next) => {
