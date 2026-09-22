@@ -14,15 +14,19 @@ dotenv.config({ path: environmentPath })
 
 const app = express()
 const port = Number(process.env.PORT || 5001)
-const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean)
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'https://unseenstudios.co.in',
+  'https://www.unseenstudios.co.in',
+  'http://unseenstudios.co.in',
+  'http://www.unseenstudios.co.in',
+  ...(process.env.CLIENT_ORIGIN || '').split(',').map((origin) => origin.trim()).filter(Boolean),
+])
 
 app.disable('x-powered-by')
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
+    if (!origin || allowedOrigins.has(origin)) return callback(null, true)
     const error = new Error('Origin is not allowed by CORS')
     error.status = 403
     return callback(error)

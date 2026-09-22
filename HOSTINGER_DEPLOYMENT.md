@@ -10,15 +10,15 @@ sudo npm install --global pm2
 
 ## 2. Upload and build
 
-Clone the repository into a directory such as `/var/www/unseen-studios`, then run:
+Clone the repository into `/var/www/unseen-studios/source`, then run:
 
 ```bash
-cd /var/www/unseen-studios
+cd /var/www/unseen-studios/source
 npm ci
 npm run build
 ```
 
-Create `/var/www/unseen-studios/.env` from `.env.example`. Set the real domain in `CLIENT_ORIGIN`, use `/api` for `VITE_API_URL`, and keep every secret only in `.env`.
+Create `/var/www/unseen-studios/source/.env` from `.env.example`. Set the real domain in `CLIENT_ORIGIN`, use `/api` for `VITE_API_URL`, and keep every secret only in `.env`.
 
 ## 3. Start with PM2
 
@@ -60,8 +60,8 @@ sudo certbot --nginx -d unseenstudios.co.in -d www.unseenstudios.co.in
 ## Updating the website
 
 ```bash
-cd /var/www/unseen-studios
-git pull
+cd /var/www/unseen-studios/source
+git pull --ff-only origin main
 npm ci
 npm run build
 pm2 restart unseen-studios --update-env
