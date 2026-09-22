@@ -12,6 +12,7 @@ import './admin-cms.css'
 type CmsModule = 'projects' | 'clients' | 'blogs' | 'testimonials' | 'hiring' | 'services' | 'team'
 type CmsItem = CmsRecord
 type Field = { name: string; label: string; type?: 'text' | 'textarea' | 'url' | 'date' | 'select' | 'checkbox' | 'image' | 'images'; required?: boolean; options?: string[] }
+const settingsDefaults={studioName:'Unseen Studios',email:'hello.trijjamedia@gmail.com',phone:'+91 77098 14062',location:'Pune, Maharashtra 411068'}
 
 const configs: Record<CmsModule, { title: string; singular: string; icon: typeof FolderKanban; fields: Field[]; statuses: string[] }> = {
   projects: { title:'Projects', singular:'Project', icon:FolderKanban, statuses:['Published','Draft'], fields:[
@@ -74,22 +75,17 @@ export function ContentManager({module}:{module:CmsModule}) {
   const filtered=useMemo(()=>items.filter((item)=>String(item.name||'').toLowerCase().includes(search.toLowerCase())&&(filter==='All'||item.status===filter||(filter==='Featured'&&item.featured))),[items,search,filter])
   useEffect(()=>{
     let active=true
-    const localRecords=readItems(module)
-    const migrationKey=`unseen-cms-server-migrated-${module}`
-    const needsMigration=!localStorage.getItem(migrationKey)
+    const legacyRecords=cmsService.legacy<CmsItem[]>(module) || []
     setLoading(true)
     cmsService.sync<CmsItem>(module).then(async(records)=>{
-      // Preserve content created by the older browser-only admin. Local items
-      // take precedence during this one-time migration, including matching IDs.
-      const merged=needsMigration&&localRecords.length
-        ? Array.from(new Map([...records,...localRecords].map((item)=>[item.id,item])).values())
+      // Import browser-only content from older releases, then delete that copy.
+      const merged=legacyRecords.length
+        ? Array.from(new Map([...records,...legacyRecords].map((item)=>[item.id,item])).values())
         : records
-      if(needsMigration&&localRecords.length&&JSON.stringify(merged)!==JSON.stringify(records))await cmsService.saveRemote(module,merged)
-      localStorage.setItem(migrationKey,'1')
+      if(legacyRecords.length){await cmsService.saveRemote(module,merged);cmsService.clearLegacy(module)}
       if(active)setItems(merged)
     }).catch(()=>{
-      cmsService.save(module,localRecords)
-      if(active){setItems(localRecords);setMessage('Your local data is safe, but the shared database could not be reached.')}
+      if(active){setItems(readItems(module));setMessage('The MongoDB database could not be reached. No changes were saved locally.')}
     }).finally(()=>{if(active)setLoading(false)})
     return()=>{active=false}
   },[module])
@@ -143,30 +139,23 @@ export function MediaManager() {
   })
   useEffect(()=>{
     let active=true
-    const localRecords=readItems('media')
-    const migrationKey='unseen-cms-server-migrated-media'
-    const needsMigration=!localStorage.getItem(migrationKey)
+    const legacyRecords=cmsService.legacy<CmsItem[]>('media') || []
     cmsService.sync<CmsItem>('media').then(async(records)=>{
-      // The previous version stored media only in this browser. On the first
-      // deployment with server-backed media, preserve and publish that cache.
-      if(needsMigration&&localRecords.length){
+      if(legacyRecords.length){
         try {
-          const mergedRecords=Array.from(new Map([...records,...localRecords].map((item)=>[item.id,item])).values())
+          const mergedRecords=Array.from(new Map([...records,...legacyRecords].map((item)=>[item.id,item])).values())
           const migratedRecords=await publishMediaFiles(mergedRecords)
           await cmsService.saveRemote('media',migratedRecords)
-          localStorage.setItem(migrationKey,'1')
+          cmsService.clearLegacy('media')
           if(active)setItems(migratedRecords)
         } catch(reason) {
-          cmsService.save('media',localRecords)
-          if(active){setItems(localRecords);setError(reason instanceof Error?reason.message:'Your local media is safe, but it could not be published yet.')}
+          if(active){setItems(records);setError(reason instanceof Error?reason.message:'Legacy media could not be imported into MongoDB yet.')}
         }
         return
       }
-      localStorage.setItem(migrationKey,'1')
       if(active)setItems(records)
     }).catch(()=>{
-      cmsService.save('media',localRecords)
-      if(active){setItems(localRecords);setError('Your local media is safe, but the shared library could not be reached.')}
+      if(active){setItems(readItems('media'));setError('The MongoDB media library could not be reached. No changes were saved locally.')}
     })
     return()=>{active=false}
   },[])
@@ -184,7 +173,7 @@ export function MediaManager() {
       let created:CmsItem[]=[]
       if(form.source==='upload'){
         const total=files.reduce((sum,file)=>sum+file.size,0)
-        if(total>3*1024*1024)throw new Error('Browser storage is limited. Upload files under 3 MB total, or use a hosted media backend.')
+        if(total>3*1024*1024)throw new Error('Upload files under 3 MB total.')
         created=await Promise.all(files.map(async(file,index)=>{
           const data=await readFile(file),isVideo=file.type.startsWith('video/')
           const response=await api.post<{url:string}>('/media/upload',{name:file.name,data})
@@ -299,7 +288,7 @@ export function PageContentManager() {
   const addSection = ()=>{const section:EditablePageSection={id:crypto.randomUUID(),eyebrow:'',title:page==='process'?'New step':'New section',body:'',image:'',linkLabel:'',linkUrl:''};setSaved(false);setForm((current)=>({...current,sections:[...current.sections,section]}))}
   const removeSection = (id:string)=>{setSaved(false);setForm((current)=>({...current,sections:current.sections.filter((section)=>section.id!==id)}))}
   const moveSection = (index:number,direction:number)=>{const target=index+direction;if(target<0||target>=form.sections.length)return;const sections=[...form.sections];[sections[index],sections[target]]=[sections[target],sections[index]];setSaved(false);setForm({...form,sections})}
-  const save = async(event:FormEvent)=>{event.preventDefault();setSaveError('');try{await savePageContent(page,form);setSaved(true)}catch{setSaved(false);setSaveError('Saved on this device, but the database could not be reached. Start the API server and save again.')}}
+  const save = async(event:FormEvent)=>{event.preventDefault();setSaveError('');try{await savePageContent(page,form);setSaved(true)}catch{setSaved(false);setSaveError('Unable to save page content to MongoDB. Check that the API server is running and try again.')}}
 
   if(!isPageKey(pageParam))return <div className="cms-page"><EmptyState title="Page not found" copy="Choose About, Process or Contact from the dashboard navigation." to="#"/></div>
 
@@ -331,27 +320,26 @@ export function PageContentManager() {
 
 export function HomepageManager() {
   const initial=useMemo(()=>({heroHeading:'Ideas with clarity. Built for impact.',heroDescription:'We turn ambitious ideas into memorable brands, films and digital experiences.',primaryButton:'Explore our work',secondaryButton:'View services',heroImage:'',heroVideo:'',aboutHeading:'We bridge the gap between brands and modern digital experiences.',aboutDescription:'Unseen Studios unites strategy, filmmaking, design, technology and growth so every idea moves with one clear direction.',aboutImage:'',aboutCta:'Discover our story',projects:'100+',clients:'45+',years:'7+',awards:'11',founderName:'Govind Budhwant',founderRole:'Founder & Creative Director',founderBio:'Govind founded Unseen Studios to build a more thoughtful kind of creative partner—close to the business, curious about the audience and uncompromising about the craft.',founderImage:'',featuredProjects:'',featuredTestimonials:'',featuredServices:'',ctaHeading:'Have a project in mind?',ctaDescription:'Let’s make it unmissable.',ctaButton:'Start a conversation',ctaLink:'/contact'}),[])
-  const [form,setForm]=useState<Record<string,string>>(()=>({...initial,...cmsService.get<Partial<Record<string,string>>>('homepage',initial)})),[saved,setSaved]=useState(false)
+  const [form,setForm]=useState<Record<string,string>>(()=>initial),[saved,setSaved]=useState(false),[saveError,setSaveError]=useState('')
   const sections=[['Hero',['heroHeading','heroDescription','primaryButton','secondaryButton','heroVideo']],['Who we are',['aboutHeading','aboutDescription','aboutCta']],['Statistics',['projects','clients','years','awards']],['Founder',['founderName','founderRole','founderBio']],['Featured content',['featuredProjects','featuredTestimonials','featuredServices']],['Call to action',['ctaHeading','ctaDescription','ctaButton','ctaLink']]] as const
   const labels:Record<string,string>={heroHeading:'Hero Heading',heroDescription:'Hero Description',primaryButton:'Primary Button',secondaryButton:'Secondary Button',heroVideo:'Hero Video URL',aboutHeading:'Who We Are Heading',aboutDescription:'Who We Are Description',aboutCta:'About Link Text',projects:'Projects',clients:'Clients',years:'Years',awards:'Creative Disciplines',founderName:'Founder Name',founderRole:'Founder Title',founderBio:'Founder Story',featuredProjects:'Featured Project IDs',featuredTestimonials:'Featured Testimonial IDs',featuredServices:'Service Order / IDs',ctaHeading:'Heading',ctaDescription:'Description',ctaButton:'Button Text',ctaLink:'Button Link'}
   useEffect(()=>{
     let active=true
-    const migrationKey='unseen-cms-server-migrated-homepage'
-    const hasLocal=localStorage.getItem('unseen-cms-homepage')!==null
-    const localValue={...initial,...cmsService.get<Partial<Record<string,string>>>('homepage',initial)}
+    const legacyValue=cmsService.legacy<Partial<Record<string,string>>>('homepage')
     cmsService.syncValue<Partial<Record<string,string>>>('homepage').then(async(remote)=>{
       if(remote){if(active)setForm({...initial,...remote})}
-      else if(hasLocal&&!localStorage.getItem(migrationKey)){await cmsService.setRemote('homepage',localValue);if(active)setForm(localValue)}
-      localStorage.setItem(migrationKey,'1')
-    }).catch(()=>{if(active)setForm(localValue)})
+      else if(legacyValue){const migrated={...initial,...legacyValue};await cmsService.setRemote('homepage',migrated);cmsService.clearLegacy('homepage');if(active)setForm(migrated)}
+    }).catch(()=>{if(active)setSaveError('Unable to load homepage content from MongoDB.')})
     return()=>{active=false}
   },[initial])
-  return <div className="cms-page"><PageHeader eyebrow="Website" title="Homepage Content" copy="Manage homepage messaging, studio story, founder information and featured content."/>{saved&&<div className="cms-success">Homepage content saved successfully. The public homepage will use these updates immediately.</div>}<form className="cms-homepage-form" onSubmit={(e)=>{e.preventDefault();void cmsService.setRemote('homepage',form).catch(()=>undefined);setSaved(true)}}><section className="cms-panel"><div className="cms-panel-head"><h2>Homepage media</h2></div><div className="cms-form-grid"><ImageUploader label="Hero Image" multiple={false} value={form.heroImage} onChange={(value)=>setForm({...form,heroImage:String(value)})}/><ImageUploader label="Studio / About Image" multiple={false} value={form.aboutImage} onChange={(value)=>setForm({...form,aboutImage:String(value)})}/><ImageUploader label="Founder Portrait" multiple={false} value={form.founderImage} onChange={(value)=>setForm({...form,founderImage:String(value)})}/></div></section>{sections.map(([title,fields])=><section className="cms-panel" key={title}><div className="cms-panel-head"><h2>{title}</h2></div><div className="cms-form-grid">{fields.map((field)=><label className={`cms-field ${field.toLowerCase().includes('description')||field==='founderBio'?'is-wide':''}`} key={field}><span>{labels[field]}</span>{field.toLowerCase().includes('description')||field==='founderBio'?<textarea rows={4} value={form[field]} onChange={(e)=>setForm({...form,[field]:e.target.value})}/>:<input value={form[field]} onChange={(e)=>setForm({...form,[field]:e.target.value})}/>}</label>)}</div></section>)}<button className="cms-primary-button" type="submit">Save homepage</button></form></div>
+  const save=async(event:FormEvent)=>{event.preventDefault();setSaveError('');try{await cmsService.setRemote('homepage',form);setSaved(true)}catch(error){setSaved(false);setSaveError(error instanceof Error?error.message:'Unable to save homepage content to MongoDB.')}}
+  return <div className="cms-page"><PageHeader eyebrow="Website" title="Homepage Content" copy="Manage homepage messaging, studio story, founder information and featured content."/>{saved&&<div className="cms-success">Homepage content saved successfully. The public homepage will use these updates immediately.</div>}{saveError&&<div className="cms-form-error cms-media-error">{saveError}</div>}<form className="cms-homepage-form" onSubmit={save}><section className="cms-panel"><div className="cms-panel-head"><h2>Homepage media</h2></div><div className="cms-form-grid"><ImageUploader label="Hero Image" multiple={false} value={form.heroImage} onChange={(value)=>setForm({...form,heroImage:String(value)})}/><ImageUploader label="Studio / About Image" multiple={false} value={form.aboutImage} onChange={(value)=>setForm({...form,aboutImage:String(value)})}/><ImageUploader label="Founder Portrait" multiple={false} value={form.founderImage} onChange={(value)=>setForm({...form,founderImage:String(value)})}/></div></section>{sections.map(([title,fields])=><section className="cms-panel" key={title}><div className="cms-panel-head"><h2>{title}</h2></div><div className="cms-form-grid">{fields.map((field)=><label className={`cms-field ${field.toLowerCase().includes('description')||field==='founderBio'?'is-wide':''}`} key={field}><span>{labels[field]}</span>{field.toLowerCase().includes('description')||field==='founderBio'?<textarea rows={4} value={form[field]} onChange={(e)=>setForm({...form,[field]:e.target.value})}/>:<input value={form[field]} onChange={(e)=>setForm({...form,[field]:e.target.value})}/>}</label>)}</div></section>)}<button className="cms-primary-button" type="submit">Save homepage</button></form></div>
 }
 
 export function SettingsManager() {
-  const defaults={studioName:'Unseen Studios',email:'hello.trijjamedia@gmail.com',phone:'+91 77098 14062',location:'Pune, Maharashtra 411068'}
-  const [form,setForm]=useState(()=>cmsService.get('settings',defaults)),[saved,setSaved]=useState(false)
+  const [form,setForm]=useState(settingsDefaults),[saved,setSaved]=useState(false),[saveError,setSaveError]=useState('')
   const fields=[['studioName','Studio Name'],['email','Contact Email'],['phone','Phone'],['location','Location']] as const
-  return <div className="cms-page"><PageHeader eyebrow="Website" title="Settings" copy="Core studio contact and publishing preferences."/>{saved&&<div className="cms-success">Settings saved successfully.</div>}<form className="cms-panel" onSubmit={(event)=>{event.preventDefault();cmsService.set('settings',form);setSaved(true)}}><div className="cms-form-grid">{fields.map(([name,label])=><label className="cms-field" key={name}><span>{label}</span><input value={form[name]} onChange={(event)=>setForm({...form,[name]:event.target.value})}/></label>)}</div><button className="cms-primary-button" type="submit">Save settings</button></form></div>
+  useEffect(()=>{let active=true;cmsService.syncValue<typeof settingsDefaults>('settings').then((remote)=>{if(active&&remote)setForm({...settingsDefaults,...remote})}).catch(()=>{if(active)setSaveError('Unable to load settings from MongoDB.')});return()=>{active=false}},[])
+  const save=async(event:FormEvent)=>{event.preventDefault();setSaveError('');try{await cmsService.setRemote('settings',form);setSaved(true)}catch(error){setSaved(false);setSaveError(error instanceof Error?error.message:'Unable to save settings to MongoDB.')}}
+  return <div className="cms-page"><PageHeader eyebrow="Website" title="Settings" copy="Core studio contact and publishing preferences."/>{saved&&<div className="cms-success">Settings saved successfully.</div>}{saveError&&<div className="cms-form-error cms-media-error">{saveError}</div>}<form className="cms-panel" onSubmit={save}><div className="cms-form-grid">{fields.map(([name,label])=><label className="cms-field" key={name}><span>{label}</span><input value={form[name]} onChange={(event)=>setForm({...form,[name]:event.target.value})}/></label>)}</div><button className="cms-primary-button" type="submit">Save settings</button></form></div>
 }

@@ -102,8 +102,8 @@ export async function fetchPageContent(page: PageKey) {
 }
 
 export async function savePageContent(page: PageKey, content: EditablePageContent) {
-  cmsService.set(pageContentKey(page), content)
   await api.put(`/pages/${page}`, content)
+  cmsService.set(pageContentKey(page), content)
 }
 
 export function usePageContent(page: PageKey) {

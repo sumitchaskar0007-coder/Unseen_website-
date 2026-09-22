@@ -6,8 +6,11 @@ export type CmsRecord = Record<string, CmsValue> & {
   image?: string
 }
 
-const keyFor = (collection: string) => `unseen-cms-${collection}`
 const apiBase = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
+// CMS content belongs to the shared database. This cache only prevents repeat
+// requests during the current page session; it is never persisted in the browser.
+const cache = new Map<string, unknown>()
+const legacyKeyFor = (collection: string) => `unseen-cms-${collection}`
 
 const requestHeaders = () => {
   const token = localStorage.getItem('adminToken')
@@ -16,15 +19,12 @@ const requestHeaders = () => {
 
 export const cmsService = {
   list<T = CmsRecord>(collection: string): T[] {
-    try {
-      return JSON.parse(localStorage.getItem(keyFor(collection)) || '[]') as T[]
-    } catch {
-      return []
-    }
+    const records = cache.get(collection)
+    return Array.isArray(records) ? records as T[] : []
   },
 
   save<T>(collection: string, records: T[]) {
-    localStorage.setItem(keyFor(collection), JSON.stringify(records))
+    cache.set(collection, records)
   },
 
   async sync<T = CmsRecord>(collection: string): Promise<T[]> {
@@ -32,7 +32,7 @@ export const cmsService = {
     if (!response.ok) throw new Error('Unable to sync content')
     const payload = await response.json() as { records?: T[] }
     const records = Array.isArray(payload.records) ? payload.records : []
-    this.save(collection, records)
+    cache.set(collection, records)
     return records
   },
 
@@ -42,26 +42,23 @@ export const cmsService = {
       const payload = await response.json().catch(() => ({})) as { message?: string }
       throw new Error(payload.message || 'Unable to publish content')
     }
-    this.save(collection, records)
+    const payload = await response.json() as { records?: T[] }
+    cache.set(collection, Array.isArray(payload.records) ? payload.records : records)
   },
 
   get<T>(collection: string, fallback: T): T {
-    try {
-      return JSON.parse(localStorage.getItem(keyFor(collection)) || JSON.stringify(fallback)) as T
-    } catch {
-      return fallback
-    }
+    return (cache.get(collection) as T | undefined) ?? fallback
   },
 
   set<T>(collection: string, value: T) {
-    localStorage.setItem(keyFor(collection), JSON.stringify(value))
+    cache.set(collection, value)
   },
 
   async syncValue<T>(collection: string): Promise<T | null> {
     const response = await fetch(`${apiBase}/cms/${collection}`)
     if (!response.ok) throw new Error('Unable to sync content')
     const payload = await response.json() as { value?: T | null }
-    if (payload.value != null) this.set(collection, payload.value)
+    if (payload.value != null) cache.set(collection, payload.value)
     return payload.value ?? null
   },
 
@@ -71,7 +68,23 @@ export const cmsService = {
       const payload = await response.json().catch(() => ({})) as { message?: string }
       throw new Error(payload.message || 'Unable to publish content')
     }
-    this.set(collection, value)
+    const payload = await response.json() as { value?: T | null }
+    cache.set(collection, payload.value ?? value)
+  },
+
+  // One-time import for content created by older releases. The old browser copy
+  // is removed only after the MongoDB write succeeds.
+  legacy<T>(collection: string): T | null {
+    try {
+      const raw = localStorage.getItem(legacyKeyFor(collection))
+      return raw === null ? null : JSON.parse(raw) as T
+    } catch {
+      return null
+    }
+  },
+
+  clearLegacy(collection: string) {
+    localStorage.removeItem(legacyKeyFor(collection))
   },
 
   published(collection: string) {
