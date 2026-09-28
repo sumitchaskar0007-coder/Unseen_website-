@@ -173,6 +173,144 @@ app.put('/api/cms/:collection', requireAdmin, async (request, response, next) =>
   }
 })
 
+const isPublished = (record) => !record.status || ['Published', 'Open'].includes(String(record.status))
+const recordId = (record) => String(record.id || record._id || '')
+const listPublished = async (collection) => {
+  const document = await CmsCollection.findOne({ collection }).lean()
+  return (document?.records || []).filter(isPublished)
+}
+const asList = (value) => Array.isArray(value)
+  ? value
+  : String(value || '').split(',').map((item) => item.trim()).filter(Boolean)
+
+const publicProject = (record) => ({
+  _id: recordId(record),
+  title: String(record.name || record.title || 'Untitled project'),
+  description: String(record.description || record.shortDescription || ''),
+  category: String(record.category || 'creative').toLowerCase(),
+  image: String(record.image || ''),
+  link: String(record.url || record.link || ''),
+  technologies: asList(record.services || record.technologies),
+  featured: record.featured === true || String(record.featured).toLowerCase() === 'true',
+  gallery: asList(record.gallery),
+  createdAt: String(record.createdAt || record.year || new Date().toISOString()),
+})
+
+const publicMedia = (record) => ({
+  _id: recordId(record),
+  title: String(record.name || record.title || 'Studio media'),
+  description: String(record.description || ''),
+  imageUrl: String(record.image || record.imageUrl || ''),
+  videoUrl: String(record.videoUrl || ''),
+  mediaType: String(record.mediaType || 'image'),
+  category: String(record.category || 'general').toLowerCase(),
+  createdAt: String(record.createdAt || new Date().toISOString()),
+})
+
+const publicBlog = (record) => {
+  const content = String(record.description || record.content || record.shortDescription || '')
+  return {
+    _id: recordId(record),
+    title: String(record.name || record.title || 'Untitled article'),
+    slug: String(record.slug || recordId(record)),
+    metaTitle: String(record.metaTitle || record.name || record.title || 'Unseen Studios'),
+    metaDescription: String(record.metaDescription || record.shortDescription || ''),
+    content,
+    featuredImage: String(record.image || record.featuredImage || ''),
+    author: String(record.author || 'Unseen Studios'),
+    readingTime: Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length / 200)),
+    tags: asList(record.tags),
+    category: String(record.category || 'Perspective'),
+    views: Number(record.views || 0),
+    createdAt: String(record.publishDate || record.createdAt || new Date().toISOString()),
+  }
+}
+
+const publicCareer = (record) => ({
+  _id: recordId(record),
+  title: String(record.name || record.title || 'Open position'),
+  department: String(record.department || 'Creative'),
+  location: String(record.location || 'Pune'),
+  type: String(record.jobType || record.type || 'Full-time').replace('Full Time', 'Full-time').replace('Part Time', 'Part-time'),
+  description: String(record.description || record.shortDescription || ''),
+  requirements: asList(record.requirements || record.skills),
+  salary: String(record.salary || ''),
+  isActive: true,
+  createdAt: String(record.createdAt || new Date().toISOString()),
+})
+
+// Read-only compatibility routes for public pages created before the CMS API.
+app.get('/api/projects', async (request, response, next) => {
+  try {
+    let projects = (await listPublished('projects')).map(publicProject)
+    if (request.query.category) projects = projects.filter((project) => project.category === String(request.query.category).toLowerCase())
+    if (request.query.featured === 'true') projects = projects.filter((project) => project.featured)
+    return response.json({ data: projects })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+app.get('/api/projects/categories', async (_request, response, next) => {
+  try {
+    const projects = (await listPublished('projects')).map(publicProject)
+    return response.json({ data: [...new Set(projects.map((project) => project.category))] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+app.get('/api/projects/:id', async (request, response, next) => {
+  try {
+    const record = (await listPublished('projects')).find((item) => recordId(item) === request.params.id)
+    return record ? response.json({ data: publicProject(record) }) : response.status(404).json({ message: 'Project not found' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+app.get('/api/gallery', async (_request, response, next) => {
+  try {
+    return response.json((await listPublished('media')).map(publicMedia))
+  } catch (error) {
+    return next(error)
+  }
+})
+
+app.get('/api/gallery/:id', async (request, response, next) => {
+  try {
+    const record = (await listPublished('media')).find((item) => recordId(item) === request.params.id)
+    return record ? response.json(publicMedia(record)) : response.status(404).json({ message: 'Gallery item not found' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+app.get('/api/blogs', async (_request, response, next) => {
+  try {
+    return response.json((await listPublished('blogs')).map(publicBlog))
+  } catch (error) {
+    return next(error)
+  }
+})
+
+app.get('/api/blogs/slug/:slug', async (request, response, next) => {
+  try {
+    const record = (await listPublished('blogs')).find((item) => String(item.slug || recordId(item)) === request.params.slug)
+    return record ? response.json(publicBlog(record)) : response.status(404).json({ message: 'Blog post not found' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+app.get('/api/careers', async (_request, response, next) => {
+  try {
+    return response.json((await listPublished('hiring')).map(publicCareer))
+  } catch (error) {
+    return next(error)
+  }
+})
+
 app.get('/api/health', (_request, response) => {
   const connected = mongoose.connection.readyState === 1
   response.status(connected ? 200 : 503).json({
@@ -180,6 +318,8 @@ app.get('/api/health', (_request, response) => {
     database: connected ? 'connected' : 'disconnected',
   })
 })
+
+app.use('/api', (_request, response) => response.status(404).json({ message: 'API route not found' }))
 
 const productionDirectory = resolve(serverDirectory, '../dist')
 app.use('/uploads', express.static(uploadsDirectory, { maxAge: '30d', immutable: true }))
