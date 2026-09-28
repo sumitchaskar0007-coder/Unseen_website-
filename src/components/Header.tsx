@@ -6,6 +6,7 @@ import {
   Menu,
   X,
 } from 'lucide-react'
+import { FaInstagram, FaYoutube } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
@@ -366,6 +367,28 @@ export function Header() {
            ===================================================== */}
 
         <div className="site-header-actions">
+
+          <div className="site-header-socials" aria-label="Social media">
+            <a
+              href="https://www.instagram.com/unseenstudios.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Unseen Studios on Instagram"
+              title="Instagram"
+            >
+              <FaInstagram aria-hidden="true" />
+            </a>
+
+            <a
+              href="https://www.youtube.com/@unseenmarathi"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Unseen Studios on YouTube"
+              title="YouTube"
+            >
+              <FaYoutube aria-hidden="true" />
+            </a>
+          </div>
 
           {/* START PROJECT */}
 
