@@ -1,8 +1,8 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
 @import 'react-quill/dist/quill.snow.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --site-canvas: #f7f3e7;
@@ -102,6 +102,148 @@ h6,
 
 .skip-link:focus {
   transform: translateY(0);
+}
+
+/* Shared touch-first category navigation. Labels never compress into one
+   another; on narrow screens the row swipes naturally without a heavy rail. */
+.category-strip {
+  display: flex;
+  max-width: 100%;
+  gap: 0.55rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2rem 0 0.55rem;
+  scroll-padding-inline: 1rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-strip::-webkit-scrollbar { display: none; }
+
+.category-strip > button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  max-width: min(82vw, 22rem);
+  scroll-snap-align: start;
+  white-space: nowrap;
+}
+
+.mobile-category-select {
+  position: relative;
+  display: none;
+  width: 100%;
+}
+
+.mobile-category-select > span {
+  position: absolute;
+  z-index: 1;
+  top: 0.55rem;
+  left: 1rem;
+  color: #746e65;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.mobile-category-select::after {
+  content: '';
+  position: absolute;
+  right: 1.15rem;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.site-inner-page .mobile-category-select select,
+.mobile-category-select select {
+  width: 100%;
+  min-height: 58px;
+  appearance: none;
+  border: 1px solid rgba(23, 23, 23, 0.25);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.58);
+  color: #171717;
+  padding: 1.3rem 3rem 0.35rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: 0 8px 24px rgba(23, 23, 23, 0.05);
+}
+
+.gallery-category-dropdown {
+  position: relative;
+  z-index: 20;
+  width: min(100%, 17rem);
+  flex: 0 0 auto;
+}
+
+.gallery-category-trigger {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(23, 23, 23, 0.25);
+  border-radius: 14px;
+  padding: 0.55rem 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  color: #171717;
+  text-align: left;
+  box-shadow: 0 8px 24px rgba(23, 23, 23, 0.05);
+}
+
+.gallery-category-trigger span { display: grid; gap: 0.25rem; font-weight: 750; text-transform: capitalize; }
+.gallery-category-trigger small { color: #746e65; font-size: 0.58rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.gallery-category-trigger svg { width: 18px; flex: none; transition: transform 180ms ease; }
+.gallery-category-trigger svg.is-open { transform: rotate(180deg); }
+
+.gallery-category-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  max-height: min(22rem, 55vh);
+  overflow-y: auto;
+  border: 1px solid rgba(23, 23, 23, 0.16);
+  border-radius: 14px;
+  padding: 0.45rem;
+  background: #fffdf8;
+  box-shadow: 0 20px 55px rgba(23, 23, 23, 0.18);
+}
+
+.gallery-category-menu button {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  color: #504b45;
+  text-align: left;
+  text-transform: capitalize;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.gallery-category-menu button:hover,
+.gallery-category-menu button.is-active { background: #171717; color: #fff; }
+.gallery-category-menu small { opacity: 0.58; font-size: 0.7rem; }
+
+@media (max-width: 767px) {
+  .mobile-category-select { display: block; }
+  .category-strip { display: none; }
+  .gallery-category-dropdown { width: 100%; }
 }
 
 @media (max-width: 639px) {

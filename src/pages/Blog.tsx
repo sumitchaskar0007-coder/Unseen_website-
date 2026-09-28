@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { blogAPI } from '../api'
 import { cmsService } from '../services/cmsService'
 import { onlineImages } from '../data/onlineImages'
+import { MobileCategorySelect } from '../components/MobileCategorySelect'
 import './blog-premium.css'
 
 interface BlogItem {
@@ -81,8 +82,9 @@ export default function Blog() {
 
       <main className="journal-main">
         <div className="journal-shell">
-          <div className="journal-toolbar" aria-label="Filter articles">
-            {categories.map((category) => <button type="button" className={filter === category ? 'is-active' : ''} onClick={() => setFilter(category)} key={category}>{category}</button>)}
+          <MobileCategorySelect label="Article category" options={categories} value={filter} onChange={setFilter} />
+          <div className="journal-toolbar category-strip" role="group" aria-label="Filter articles by category">
+            {categories.map((category) => <button type="button" aria-pressed={filter === category} className={filter === category ? 'is-active' : ''} onClick={() => setFilter(category)} key={category}>{category}</button>)}
           </div>
 
           {loading && !blogs.length ? <div className="journal-loading">Loading the journal…</div> : featured ? (

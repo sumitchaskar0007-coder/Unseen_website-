@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaExternalLinkAlt, FaFilter } from 'react-icons/fa';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { getApiAssetUrl, projectAPI } from '../api';
 import { cmsService } from '../services/cmsService';
+import { MobileCategorySelect } from '../components/MobileCategorySelect';
 
 interface Project {
   _id: string;
@@ -30,7 +31,6 @@ const PortfolioPage = () => {
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -88,31 +88,29 @@ const PortfolioPage = () => {
 
         {/* Filter Bar */}
         <div className="mb-8">
-          {/* Mobile Filter Toggle */}
-          <button
-            onClick={() => setShowFilter(!showFilter)}
-            className="md:hidden flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-md mb-4"
-          >
-            <FaFilter />
-            <span>Filter: {selectedCategory === 'All' ? 'All Projects' : formatCategoryName(selectedCategory)}</span>
-          </button>
-
-          <div className={`${showFilter ? 'block' : 'hidden'} md:block`}>
-            <div className="flex flex-wrap justify-center gap-3">
+          <MobileCategorySelect
+            label="Project category"
+            options={categories}
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+            getOptionLabel={(category) => category === 'All' ? 'All Projects' : formatCategoryName(category)}
+          />
+          <div className="category-strip md:flex-wrap md:justify-center" role="group" aria-label="Filter projects by category">
               {categories.map((category) => (
                 <button
+                  type="button"
+                  aria-pressed={selectedCategory === category}
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                     selectedCategory === category
-                      ? 'bg-indigo-600 text-white shadow-lg transform scale-105'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 shadow-md hover:shadow-lg'
+                      ? 'bg-neutral-900 text-white shadow-md'
+                      : 'border border-neutral-300 bg-transparent text-gray-700 hover:bg-white'
                   }`}
                 >
                   {category === 'All' ? 'All Projects' : formatCategoryName(category)}
                 </button>
               ))}
-            </div>
           </div>
         </div>
 

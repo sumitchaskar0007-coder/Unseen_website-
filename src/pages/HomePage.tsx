@@ -9,6 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { serviceCategories } from '../data/serviceCategories'
 import { onlineImages } from '../data/onlineImages'
 import { cmsService } from '../services/cmsService'
+import { MobileCategorySelect } from '../components/MobileCategorySelect'
 import './home-premium.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -21,6 +22,8 @@ const defaultProjects = [
   { title: 'The Unseen Edit', type: 'Creative Platform', year: '2026', category: 'Web Design', image: onlineImages.webDevelopment },
   { title: 'Signals of Growth', type: 'Digital Strategy', year: '2025', category: 'Branding', image: onlineImages.analyticsDashboard },
 ]
+
+const portfolioCategories = ['All', 'Branding', 'Web Design', 'Development', 'Marketing']
 
 const defaultPeople = [
   { name: 'Govind Budhwant', role: 'Founder & Creative Director', image: 'assets/images/founder.png', instagram: 'https://www.instagram.com/unseenstudios.in', linkedin: 'https://www.linkedin.com/company/collage-digital-marketing-technologies/' },
@@ -599,16 +602,12 @@ export function HomePage() {
 
             <div className="hp-portfolio-toolbar" data-reveal>
               <p>Stories, systems and experiences that create a clear before and after.</p>
-              <div className="hp-portfolio-filters" role="group" aria-label="Filter projects">
-              {[
-                'All',
-                'Branding',
-                'Web Design',
-                'Development',
-                'Marketing'
-              ].map((item) => (
+              <MobileCategorySelect label="Project category" options={portfolioCategories} value={filter} onChange={setFilter} />
+              <div className="hp-portfolio-filters category-strip" role="group" aria-label="Filter projects by category">
+              {portfolioCategories.map((item) => (
                 <button type="button"
                   key={item}
+                  aria-pressed={filter === item}
                   className={filter === item ? 'is-active' : ''}
                   onClick={() => setFilter(item)}
                 >

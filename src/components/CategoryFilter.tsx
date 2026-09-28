@@ -1,4 +1,5 @@
 import React from 'react';
+import { MobileCategorySelect } from './MobileCategorySelect';
 
 interface CategoryFilterProps {
   categories: string[];
@@ -12,8 +13,18 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   onSelectCategory
 }) => {
   return (
-    <div className="flex flex-wrap gap-2 mb-6">
+    <>
+      <MobileCategorySelect
+        label="Category"
+        options={['', ...categories]}
+        value={selectedCategory}
+        onChange={onSelectCategory}
+        getOptionLabel={(category) => category ? category.replace('-', ' ').toUpperCase() : 'All'}
+      />
+      <div className="category-strip mb-6" role="group" aria-label="Filter by category">
       <button
+        type="button"
+        aria-pressed={selectedCategory === ''}
         onClick={() => onSelectCategory('')}
         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
           selectedCategory === ''
@@ -25,6 +36,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
       </button>
       {categories.map((category) => (
         <button
+          type="button"
+          aria-pressed={selectedCategory === category}
           key={category}
           onClick={() => onSelectCategory(category)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -36,7 +49,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
           {category.replace('-', ' ').toUpperCase()}
         </button>
       ))}
-    </div>
+      </div>
+    </>
   );
 };
 

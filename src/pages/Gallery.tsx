@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { galleryAPI } from '../api';
 import { FaSearch } from 'react-icons/fa';
+import { ChevronDown } from 'lucide-react';
 import { cmsService } from '../services/cmsService';
 import { onlineImages } from '../data/onlineImages';
 
@@ -27,9 +28,22 @@ const editorialGallery: GalleryItem[] = [
   { _id: 'editorial-social', title: 'Social in motion', description: 'Digital channels built for attention and connection.', imageUrl: onlineImages.socialMedia, category: 'digital', mediaType: 'image', createdAt: '2026-01-09' },
 ];
 
-const youtubeEmbed = (url: string) => {
+const youtubeEmbed = (url: string, modal = false) => {
   const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&/]+)/i);
-  return match ? `https://www.youtube.com/embed/${match[1]}` : '';
+  if (!match) return '';
+  const videoId = match[1];
+  const params = new URLSearchParams({
+    autoplay: '1',
+    playsinline: '1',
+    rel: '0',
+    mute: modal ? '0' : '1',
+  });
+  if (!modal) {
+    params.set('controls', '0');
+    params.set('loop', '1');
+    params.set('playlist', videoId);
+  }
+  return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
 };
 
 const instagramEmbed = (url: string) => {
@@ -38,23 +52,39 @@ const instagramEmbed = (url: string) => {
 };
 
 const GalleryMedia = ({ item, modal = false }: { item: GalleryItem; modal?: boolean }) => {
-  const className = modal ? 'w-full max-h-[75vh] rounded-lg bg-black object-contain' : 'w-full h-64 object-cover transition group-hover:scale-110';
+  const className = modal
+    ? 'h-full w-full bg-black object-contain'
+    : 'h-full w-full object-cover transition duration-700 group-hover:scale-105';
   if (item.mediaType === 'youtube') {
-    return <iframe src={youtubeEmbed(item.videoUrl || '')} title={item.title} className={className} allowFullScreen loading="lazy" />;
+    return <iframe
+      src={youtubeEmbed(item.videoUrl || '', modal)}
+      title={item.title}
+      className={`${className} ${modal ? '' : 'pointer-events-none'}`}
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowFullScreen
+      loading={modal ? 'eager' : 'lazy'}
+    />;
   }
   if (item.mediaType === 'instagram') {
-    return <iframe src={instagramEmbed(item.videoUrl || '')} title={item.title} className={className} allowFullScreen loading="lazy" />;
+    return <iframe
+      src={instagramEmbed(item.videoUrl || '')}
+      title={item.title}
+      className={`${className} ${modal ? '' : 'pointer-events-none'}`}
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowFullScreen
+      loading={modal ? 'eager' : 'lazy'}
+    />;
   }
   if (item.mediaType === 'video') {
     return <video
       src={item.videoUrl}
       className={className}
+      autoPlay
       controls={modal}
+      loop={!modal}
       muted={!modal}
       playsInline
       preload="metadata"
-      onMouseEnter={(event) => { if (!modal) void event.currentTarget.play().catch(() => undefined); }}
-      onMouseLeave={(event) => { if (!modal) event.currentTarget.pause(); }}
     />;
   }
   return <img src={item.imageUrl} alt={item.title} className={className} />;
@@ -66,6 +96,8 @@ const Gallery = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const categoryMenuRef = useRef<HTMLDivElement>(null);
 
   const categories = ['all', ...Array.from(new Set(items.map((item) => item.category || 'general')))];
   const filteredItems = useMemo(() => items.filter((item) => {
@@ -78,6 +110,36 @@ const Gallery = () => {
   useEffect(() => {
     fetchGallery();
   }, []);
+
+  useEffect(() => {
+    if (!selectedImage) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedImage(null);
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [selectedImage]);
+
+  useEffect(() => {
+    if (!categoryMenuOpen) return;
+    const closeMenu = (event: MouseEvent) => {
+      if (!categoryMenuRef.current?.contains(event.target as Node)) setCategoryMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setCategoryMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', closeMenu);
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeMenu);
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [categoryMenuOpen]);
 
   const fetchGallery = async () => {
     await Promise.allSettled([cmsService.sync('media'), cmsService.sync('projects')]);
@@ -137,21 +199,38 @@ const Gallery = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg capitalize whitespace-nowrap transition ${
-                  selectedCategory === category
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+
+          <div className="gallery-category-dropdown" ref={categoryMenuRef}>
+            <button
+              type="button"
+              className="gallery-category-trigger"
+              aria-haspopup="listbox"
+              aria-expanded={categoryMenuOpen}
+              onClick={() => setCategoryMenuOpen((open) => !open)}
+            >
+              <span><small>Category</small>{selectedCategory === 'all' ? 'All media' : selectedCategory}</span>
+              <ChevronDown className={categoryMenuOpen ? 'is-open' : ''} />
+            </button>
+            {categoryMenuOpen && (
+              <div className="gallery-category-menu" role="listbox" aria-label="Gallery categories">
+                {categories.map((category) => (
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={selectedCategory === category}
+                    className={selectedCategory === category ? 'is-active' : ''}
+                    key={category}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setCategoryMenuOpen(false);
+                    }}
+                  >
+                    <span>{category === 'all' ? 'All media' : category}</span>
+                    <small>{items.filter((item) => category === 'all' || item.category === category).length}</small>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -167,9 +246,11 @@ const Gallery = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map((item) => (
-              <div
+              <button
+                type="button"
                 key={item._id}
-                className="group relative overflow-hidden rounded-lg shadow-md cursor-pointer transform transition hover:scale-105"
+                aria-label={`Open ${item.title}`}
+                className="group relative aspect-square overflow-hidden rounded-2xl bg-neutral-900 text-left shadow-md transition duration-300 md:hover:-translate-y-1 md:hover:shadow-xl"
                 onClick={() => setSelectedImage(item)}
               >
                 <GalleryMedia item={item} />
@@ -182,7 +263,7 @@ const Gallery = () => {
                     </span>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -190,18 +271,25 @@ const Gallery = () => {
         {/* Lightbox Modal */}
         {selectedImage && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[10001] flex items-center justify-center overflow-y-auto bg-black/90 p-4 backdrop-blur-sm"
             onClick={() => setSelectedImage(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={selectedImage.title}
           >
-            <div className="max-w-4xl w-full relative">
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 z-10"
-              >
-                ×
-              </button>
-              <GalleryMedia item={selectedImage} modal />
-              <div className="bg-white p-4 rounded-b-lg mt-2">
+            <div className="my-auto w-[min(92vw,74vh,900px)]" onClick={(event) => event.stopPropagation()}>
+              <div className="relative aspect-square overflow-hidden rounded-2xl bg-black shadow-2xl">
+                <button
+                  type="button"
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute right-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full bg-black/70 text-2xl text-white backdrop-blur transition hover:bg-white hover:text-black"
+                  aria-label="Close media viewer"
+                >
+                  ×
+                </button>
+                <GalleryMedia item={selectedImage} modal />
+              </div>
+              <div className="mt-3 rounded-2xl bg-white p-5 sm:p-6">
                 <h3 className="text-xl font-semibold mb-2">{selectedImage.title}</h3>
                 <p className="text-gray-600">{selectedImage.description}</p>
                 <p className="text-sm text-gray-400 mt-2 capitalize">Category: {selectedImage.category}</p>
