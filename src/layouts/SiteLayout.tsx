@@ -67,7 +67,8 @@ export function SiteLayout() {
   useLayoutEffect(() => {
     if (!mainRef.current || location.pathname === '/' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const context = gsap.context(() => {
-      gsap.from('h1', { y: 42, opacity: 0, duration: .85, ease: 'power3.out' })
+      const heading = mainRef.current?.querySelector('h1')
+      if (heading) gsap.from(heading, { y: 42, opacity: 0, duration: .85, ease: 'power3.out' })
       gsap.utils.toArray<HTMLElement>('section').forEach((section, index) => {
         if (index === 0) return
         gsap.from(section, { y: 54, opacity: 0, duration: .85, ease: 'power3.out', scrollTrigger: { trigger: section, start: 'top 88%', once: true } })
@@ -78,7 +79,11 @@ export function SiteLayout() {
       gsap.utils.toArray<HTMLElement>('[data-clip]').forEach((element) => {
         gsap.from(element, { clipPath: 'inset(0 0 100% 0)', duration: 1.05, ease: 'power4.inOut', scrollTrigger: { trigger: element, start: 'top 84%', once: true } })
       })
-      gsap.to('.inner-page-wave.wave-b', { xPercent: 8, ease: 'none', scrollTrigger: { trigger: '.inner-page-hero', start: 'top top', end: 'bottom top', scrub: true } })
+      const wave = mainRef.current?.querySelector('.inner-page-wave.wave-b')
+      const hero = mainRef.current?.querySelector('.inner-page-hero')
+      if (wave && hero) {
+        gsap.to(wave, { xPercent: 8, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } })
+      }
       gsap.utils.toArray<HTMLElement>('section img').forEach((image) => {
         gsap.fromTo(image, { scale: 1.035 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: image, start: 'top bottom', end: 'bottom top', scrub: .6 } })
       })

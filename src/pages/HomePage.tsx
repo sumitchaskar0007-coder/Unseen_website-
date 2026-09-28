@@ -142,11 +142,6 @@ export function HomePage() {
           stagger: .08,
           duration: .65
         }, '-=.5')
-        .from('.hp-reference-brand-card', {
-          y: 20,
-          opacity: 0,
-          duration: .65
-        }, '-=.4')
         .from('.hp-reference-shapes span', {
           scale: 0,
           stagger: .1,
