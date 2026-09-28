@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { blogAPI } from '../../api';
 import toast from 'react-hot-toast';
 import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaImage } from 'react-icons/fa';
 
 interface BlogItem {

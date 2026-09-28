@@ -51,6 +51,38 @@ const instagramEmbed = (url: string) => {
   return match ? `https://www.instagram.com/${match[1]}/${match[2]}/embed` : url;
 };
 
+const GalleryVideo = ({ item, modal, className }: { item: GalleryItem; modal: boolean; className: string }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || modal) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        void video.play().catch(() => undefined);
+      } else {
+        video.pause();
+      }
+    }, { rootMargin: '160px 0px', threshold: 0.15 });
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [modal, item.videoUrl]);
+
+  return <video
+    ref={videoRef}
+    src={item.videoUrl}
+    className={className}
+    autoPlay={modal}
+    controls={modal}
+    loop={!modal}
+    muted={!modal}
+    playsInline
+    preload={modal ? 'metadata' : 'none'}
+  />;
+};
+
 const GalleryMedia = ({ item, modal = false }: { item: GalleryItem; modal?: boolean }) => {
   const className = modal
     ? 'h-full w-full bg-black object-contain'
@@ -76,18 +108,9 @@ const GalleryMedia = ({ item, modal = false }: { item: GalleryItem; modal?: bool
     />;
   }
   if (item.mediaType === 'video') {
-    return <video
-      src={item.videoUrl}
-      className={className}
-      autoPlay
-      controls={modal}
-      loop={!modal}
-      muted={!modal}
-      playsInline
-      preload="metadata"
-    />;
+    return <GalleryVideo item={item} modal={modal} className={className} />;
   }
-  return <img src={item.imageUrl} alt={item.title} className={className} />;
+  return <img src={item.imageUrl} alt={item.title} className={className} loading={modal ? 'eager' : 'lazy'} decoding="async" />;
 };
 
 const Gallery = () => {

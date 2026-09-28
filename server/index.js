@@ -183,7 +183,17 @@ app.get('/api/health', (_request, response) => {
 
 const productionDirectory = resolve(serverDirectory, '../dist')
 app.use('/uploads', express.static(uploadsDirectory, { maxAge: '30d', immutable: true }))
-app.use(express.static(productionDirectory, { maxAge: '1h', index: false }))
+app.use(express.static(productionDirectory, {
+  maxAge: '1h',
+  index: false,
+  setHeaders(response, filePath) {
+    if (/[/\\]assets[/\\][^/\\]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/.test(filePath)) {
+      response.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+    } else if (/\.(?:avif|gif|jpe?g|png|svg|webp|mp4|webm|woff2?)$/i.test(filePath)) {
+      response.setHeader('Cache-Control', 'public, max-age=604800')
+    }
+  },
+}))
 app.use((request, response, next) => {
   if (request.method !== 'GET' || request.path.startsWith('/api/') || !request.accepts('html')) return next()
   return response.sendFile(resolve(productionDirectory, 'index.html'), {

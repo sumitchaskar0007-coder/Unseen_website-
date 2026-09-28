@@ -1,33 +1,41 @@
 // frontend/src/App.tsx
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { CursorGlow } from './components/CursorGlow'
-import { SiteLayout } from './layouts/SiteLayout'
-import AboutPage from './pages/AboutPage'
-import { ContactPage } from './pages/ContactPage'
-import { HomePage } from './pages/HomePage'
-import PortfolioPage from './pages/PortfolioPage'
-import { ProcessPage } from './pages/ProcessPage'
-import { ServicesPage } from './pages/ServicesPage'
-import WhyUnseen from './pages/WhyUnseen'
-import Podcast from './pages/Podcast'
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminLogin from './pages/admin/AdminLogin';
-import { AdminHome, AdminLayout, ContentManager, HomepageManager, MediaManager, PageContentManager, SettingsManager } from './pages/admin/CMSAdmin';
-import Gallery from './pages/Gallery';
-import Careers from './pages/Careers';
-import Blog from './pages/Blog';
-import BlogPost from './pages/BlogPost';
-import ProjectPage from './pages/ProjectPage';
-import Website from './pages/Website';
-import Film from './pages/Film';
-import Adds from './pages/Adds';
-import Seo from './pages/Seo';
-import WebDev from './pages/WebDev';
-import ERP from './pages/ERP';
-import DigitalPage from './pages/DigitalPage';
-import CampaignPage from './pages/CampaignPage';
-import BulkSmsPage from './pages/BulkSmsPage';
 import { getWhatsAppChatUrl } from './config/whatsapp';
+
+const SiteLayout = lazy(() => import('./layouts/SiteLayout').then((module) => ({ default: module.SiteLayout })))
+const HomePage = lazy(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
+const ContactPage = lazy(() => import('./pages/ContactPage').then((module) => ({ default: module.ContactPage })))
+const PortfolioPage = lazy(() => import('./pages/PortfolioPage'))
+const ProcessPage = lazy(() => import('./pages/ProcessPage').then((module) => ({ default: module.ProcessPage })))
+const ServicesPage = lazy(() => import('./pages/ServicesPage').then((module) => ({ default: module.ServicesPage })))
+const WhyUnseen = lazy(() => import('./pages/WhyUnseen'))
+const Podcast = lazy(() => import('./pages/Podcast'))
+const Gallery = lazy(() => import('./pages/Gallery'))
+const Careers = lazy(() => import('./pages/Careers'))
+const Blog = lazy(() => import('./pages/Blog'))
+const BlogPost = lazy(() => import('./pages/BlogPost'))
+const ProjectPage = lazy(() => import('./pages/ProjectPage'))
+const Website = lazy(() => import('./pages/Website'))
+const Film = lazy(() => import('./pages/Film'))
+const Adds = lazy(() => import('./pages/Adds'))
+const Seo = lazy(() => import('./pages/Seo'))
+const WebDev = lazy(() => import('./pages/WebDev'))
+const ERP = lazy(() => import('./pages/ERP'))
+const DigitalPage = lazy(() => import('./pages/DigitalPage'))
+const CampaignPage = lazy(() => import('./pages/CampaignPage'))
+const BulkSmsPage = lazy(() => import('./pages/BulkSmsPage'))
+const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const AdminLayout = lazy(() => import('./pages/admin/CMSAdmin').then((module) => ({ default: module.AdminLayout })))
+const AdminHome = lazy(() => import('./pages/admin/CMSAdmin').then((module) => ({ default: module.AdminHome })))
+const ContentManager = lazy(() => import('./pages/admin/CMSAdmin').then((module) => ({ default: module.ContentManager })))
+const MediaManager = lazy(() => import('./pages/admin/CMSAdmin').then((module) => ({ default: module.MediaManager })))
+const HomepageManager = lazy(() => import('./pages/admin/CMSAdmin').then((module) => ({ default: module.HomepageManager })))
+const PageContentManager = lazy(() => import('./pages/admin/CMSAdmin').then((module) => ({ default: module.PageContentManager })))
+const SettingsManager = lazy(() => import('./pages/admin/CMSAdmin').then((module) => ({ default: module.SettingsManager })))
 
 // Social Media URLs - Update these with your actual URLs
 const SOCIAL_URLS = {
@@ -141,7 +149,8 @@ export default function App() {
     <div className="relative min-h-svh bg-white text-neutral-800">
       <CursorGlow />
       <div className="relative z-10">
-        <Routes>
+        <Suspense fallback={<RouteLoading />}>
+          <Routes>
           {/* Main Routes with SiteLayout */}
           <Route element={<SiteLayout />}>
             <Route path="/" element={<HomePage />} />
@@ -222,11 +231,20 @@ export default function App() {
               <Route path="careers" element={<Navigate to="/admin/hiring" replace />} />
             </Route>
           </Route>
-        </Routes>
+          </Routes>
+        </Suspense>
       </div>
       
       {/* Social Media Icons */}
       <SocialIcons />
+    </div>
+  )
+}
+
+function RouteLoading() {
+  return (
+    <div className="grid min-h-svh place-items-center bg-[#f7f3e7]" role="status" aria-label="Loading page">
+      <span className="h-9 w-9 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-900" />
     </div>
   )
 }

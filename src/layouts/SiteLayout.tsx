@@ -15,7 +15,10 @@ export function SiteLayout() {
   const mainRef = useRef<HTMLElement>(null)
   const introRef = useRef<HTMLDivElement>(null)
   const lenisRef = useRef<Lenis | null>(null)
-  const [showIntro, setShowIntro] = useState(() => sessionStorage.getItem('unseen-site-intro') !== '1')
+  const [showIntro, setShowIntro] = useState(() => (
+    sessionStorage.getItem('unseen-site-intro') !== '1'
+    && !window.matchMedia('(max-width: 700px), (prefers-reduced-motion: reduce)').matches
+  ))
   const ownsHero = location.pathname === '/about' || location.pathname === '/blog' || location.pathname.startsWith('/blog/')
 
   useEffect(() => {
@@ -41,10 +44,10 @@ export function SiteLayout() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduced) { setShowIntro(false); return }
     const timeline = gsap.timeline({ onComplete: () => setShowIntro(false) })
-    timeline.from('.site-intro-logo', { scale: .84, opacity: 0, duration: .7, ease: 'power3.out' })
-      .from('.site-intro-name-image', { yPercent: 45, scale: .92, opacity: 0, duration: .8, ease: 'power4.out' }, '-=.35')
-      .to({}, { duration: .35 })
-      .to(introRef.current, { yPercent: -100, duration: .8, ease: 'power4.inOut' })
+    timeline.from('.site-intro-logo', { scale: .9, opacity: 0, duration: .28, ease: 'power3.out' })
+      .from('.site-intro-name-image', { yPercent: 30, opacity: 0, duration: .32, ease: 'power3.out' }, '-=.14')
+      .to({}, { duration: .08 })
+      .to(introRef.current, { yPercent: -100, duration: .38, ease: 'power3.inOut' })
     return () => { timeline.kill() }
   }, [showIntro])
 
