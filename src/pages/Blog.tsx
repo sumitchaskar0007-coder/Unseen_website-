@@ -1,7 +1,6 @@
 import { ArrowRight, ArrowUpRight, Clock3 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { blogAPI } from '../api'
 import { cmsService } from '../services/cmsService'
 import { onlineImages } from '../data/onlineImages'
 import { MobileCategorySelect } from '../components/MobileCategorySelect'
@@ -49,14 +48,9 @@ export default function Blog() {
         category: String(item.category || 'Perspective'),
         createdAt: String(item.publishDate || new Date().toISOString()),
       }))
-      try {
-        const response = await blogAPI.getAll()
-        const apiBlogs: BlogItem[] = response.data || []
-        if (active) setBlogs([...localBlogs, ...apiBlogs.filter((post) => !localBlogs.some((local) => local._id === post._id))])
-      } catch {
-        if (active) setBlogs(localBlogs)
-      } finally {
-        if (active) setLoading(false)
+      if (active) {
+        setBlogs(localBlogs)
+        setLoading(false)
       }
     }
     void load()

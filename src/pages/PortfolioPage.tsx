@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import { getApiAssetUrl, projectAPI } from '../api';
+import { getApiAssetUrl } from '../api';
 import { cmsService } from '../services/cmsService';
 import { MobileCategorySelect } from '../components/MobileCategorySelect';
 
@@ -57,20 +57,9 @@ const PortfolioPage = () => {
       featured: Boolean(item.featured),
       createdAt: String(item.year || new Date().toISOString()),
     }));
-    try {
-      setLoading(true);
-      const response = await projectAPI.getAll();
-      const apiProjects = response.data.data || [];
-      const combined = [...localProjects, ...apiProjects.filter((project: Project) => !localProjects.some((local) => local._id === project._id))];
-      setProjects(combined);
-      setFilteredProjects(combined);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      setProjects(localProjects);
-      setFilteredProjects(localProjects);
-    } finally {
-      setLoading(false);
-    }
+    setProjects(localProjects);
+    setFilteredProjects(localProjects);
+    setLoading(false);
   };
 
   const formatCategoryName = (category: string) => {

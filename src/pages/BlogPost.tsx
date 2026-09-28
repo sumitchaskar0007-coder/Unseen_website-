@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { blogAPI } from '../api';
 import ReadingProgressBar from '../components/ReadingProgressBar';
 import ShareButtons from '../components/ShareButtons';
 import { FaUser, FaCalendar, FaClock, FaEye, FaArrowLeft } from 'react-icons/fa';
@@ -57,13 +56,7 @@ const BlogPost = () => {
         document.title = localBlog.metaTitle;
         return;
       }
-      const response = await blogAPI.getBySlug(slug!);
-      setBlog(response.data);
-      document.title = response.data.metaTitle;
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute('content', response.data.metaDescription);
-      }
+      throw new Error('Blog post not found');
     } catch (error) {
       const fallback = {
         'brand-distinction': { title: 'Why distinct brands outperform loud ones', content: '<p>A useful brand is not the one that says the most. It is the one people recognise, understand and remember. Distinction comes from a clear point of view repeated with care across every experience.</p><p>Start with the truth only your brand can own. Express it consistently, remove what does not help, and let recognition compound over time.</p>', featuredImage: onlineImages.businessPlanning, createdAt: '2026-08-28' },

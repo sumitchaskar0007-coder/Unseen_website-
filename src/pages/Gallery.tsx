@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { galleryAPI } from '../api';
 import { FaSearch } from 'react-icons/fa';
 import { ChevronDown } from 'lucide-react';
 import { cmsService } from '../services/cmsService';
@@ -189,16 +188,8 @@ const Gallery = () => {
       }));
     });
     const localItems = [...mediaItems, ...projectImages];
-    try {
-      const response = await galleryAPI.getAll();
-      const apiItems: GalleryItem[] = response.data || [];
-      const combined = [...localItems, ...apiItems.filter((item) => !localItems.some((local) => local._id === item._id)), ...editorialGallery];
-      setItems(combined);
-    } catch (error) {
-      setItems([...localItems, ...editorialGallery]);
-    } finally {
-      setLoading(false);
-    }
+    setItems([...localItems, ...editorialGallery]);
+    setLoading(false);
   };
 
   return (

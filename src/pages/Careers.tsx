@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { careerAPI } from '../api';
 import { FaBriefcase, FaMapMarkerAlt, FaClock, FaDollarSign, FaFilter, FaChevronRight } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { cmsService } from '../services/cmsService';
@@ -53,30 +52,10 @@ const Careers = () => {
       isActive: true,
       createdAt: new Date().toISOString(),
     }));
-    try {
-      setLoading(true);
-      const response = await careerAPI.getAll();
-      const activeCareers = (response.data || [])
-        .filter((career: CareerItem) => career.isActive === true)
-        .map((career: any) => ({
-          ...career,
-          requirements: Array.isArray(career.requirements)
-            ? career.requirements
-            : career.requirements
-            ? career.requirements.split(',').map((r: string) => r.trim())
-            : [],
-        }));
-      const combined = [...localCareers, ...activeCareers.filter((career: CareerItem) => !localCareers.some((local) => local._id === career._id))];
-      setCareers(combined);
-      setFilteredCareers(combined);
-      if (combined.length === 0) toast('No active job openings at the moment', { icon: 'ℹ️' });
-    } catch (error: any) {
-      if (!localCareers.length) toast.error(error.response?.data?.message || 'Failed to load careers');
-      setCareers(localCareers);
-      setFilteredCareers(localCareers);
-    } finally {
-      setLoading(false);
-    }
+    setCareers(localCareers);
+    setFilteredCareers(localCareers);
+    if (localCareers.length === 0) toast('No active job openings at the moment', { icon: 'ℹ️' });
+    setLoading(false);
   };
 
   const filterCareers = () => {

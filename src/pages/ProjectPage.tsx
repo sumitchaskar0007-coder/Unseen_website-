@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaArrowLeft, FaExternalLinkAlt, FaTag, FaCalendar } from 'react-icons/fa';
-import { getApiAssetUrl, projectAPI } from '../api';
+import { getApiAssetUrl } from '../api';
 import { cmsService } from '../services/cmsService';
 
 interface Project {
@@ -49,8 +49,7 @@ const ProjectPage = () => {
         });
         return;
       }
-      const response = await projectAPI.getById(projectId);
-      setProject(response.data.data);
+      setError('Project not found');
     } catch (err: any) {
       console.error('Error fetching project:', err);
       setError(err.response?.data?.message || 'Failed to load project');
