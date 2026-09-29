@@ -21,4 +21,5 @@ export const onlineImages = {
   serverRoom: unsplash('photo-1558494949-ef010cbdcc31'),
   hospitality: unsplash('photo-1414235077428-338989a2e8c0'),
   socialMedia: unsplash('photo-1611162617474-5b21e879e113'),
+  leakingFaucet: unsplash('photo-1529732276122-33d9487bfcfe', 2400),
 } as const
